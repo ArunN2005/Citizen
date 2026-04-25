@@ -4,7 +4,8 @@
  */
 class InfrastructureService {
   constructor() {
-    this.apiKey = process.env.EXPO_PUBLIC_GOOGLE_MOBILE_API_KEY || 'AIzaSyD44ORakAZledPQSeEwxk0Ohthgsc_eMQ0';
+    this.apiKey = process.env.EXPO_PUBLIC_GOOGLE_MOBILE_API_KEY || 'AIzaSyDB257FqtbNh6mEnV2ZsFfXTbsQmZ7kcjY';
+    console.log('🏗️ InfrastructureService initialized, API key:', this.apiKey ? 'SET' : 'NOT SET');
   }
 
   /**
@@ -12,7 +13,7 @@ class InfrastructureService {
    */
   async getNearbyInfrastructure(latitude, longitude, radius = 500) {
     console.log(`🏗️ Finding infrastructure near: ${latitude}, ${longitude}`);
-    
+
     try {
       const infrastructureTypes = [
         // Essential infrastructure
@@ -30,7 +31,7 @@ class InfrastructureService {
       ];
 
       const allNearbyPlaces = [];
-      
+
       // Search for each infrastructure type
       for (const infra of infrastructureTypes) {
         try {
@@ -52,12 +53,12 @@ class InfrastructureService {
 
       // Sort by priority and distance
       const sortedPlaces = this.sortInfrastructureByRelevance(allNearbyPlaces);
-      
+
       // Get the most relevant nearby places (max 10)
       const topPlaces = sortedPlaces.slice(0, 10);
-      
+
       console.log(`✅ Found ${topPlaces.length} nearby infrastructure points`);
-      
+
       return {
         success: true,
         infrastructure: topPlaces,
@@ -81,11 +82,11 @@ class InfrastructureService {
    */
   async searchPlacesByType(lat, lng, type, radius) {
     const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${this.apiKey}`;
-    
+
     try {
       const response = await fetch(url);
       const data = await response.json();
-      
+
       if (data.status === 'OK' && data.results) {
         return data.results.slice(0, 3).map(place => ({
           id: place.place_id,
@@ -97,7 +98,10 @@ class InfrastructureService {
           isOpen: place.opening_hours?.open_now
         }));
       }
-      
+
+      if (data.status !== 'ZERO_RESULTS') {
+        console.warn(`⚠️ Google Places API returned status: ${data.status} for type: ${type}`, data.error_message || '');
+      }
       return [];
     } catch (error) {
       console.log(`Failed to search ${type}:`, error.message);
@@ -110,15 +114,15 @@ class InfrastructureService {
    */
   calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371e3; // Earth's radius in meters
-    const φ1 = lat1 * Math.PI/180;
-    const φ2 = lat2 * Math.PI/180;
-    const Δφ = (lat2-lat1) * Math.PI/180;
-    const Δλ = (lon2-lon1) * Math.PI/180;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
 
-    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-              Math.cos(φ1) * Math.cos(φ2) *
-              Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return Math.round(R * c);
   }
@@ -128,16 +132,16 @@ class InfrastructureService {
    */
   sortInfrastructureByRelevance(places) {
     const priorityWeight = { high: 3, medium: 2, low: 1 };
-    
+
     return places.sort((a, b) => {
       const priorityA = priorityWeight[a.priority] || 1;
       const priorityB = priorityWeight[b.priority] || 1;
-      
+
       // Higher priority first, then closer distance
       if (priorityA !== priorityB) {
         return priorityB - priorityA;
       }
-      
+
       return a.distance - b.distance;
     });
   }
@@ -155,9 +159,9 @@ class InfrastructureService {
     const highPriority = uniqueInfrastructure.filter(i => i.priority === 'high');
     const mediumPriority = uniqueInfrastructure.filter(i => i.priority === 'medium');
     const closest = infrastructure[0];
-    
+
     let summary = `📍 Location Context Report:\n\n`;
-    
+
     // Essential services (high priority)
     if (highPriority.length > 0) {
       summary += `🚨 Essential Services:\n`;
@@ -167,7 +171,7 @@ class InfrastructureService {
       });
       summary += `\n`;
     }
-    
+
     // Other services (medium priority)
     if (mediumPriority.length > 0) {
       summary += `🏢 Other Facilities:\n`;
@@ -177,10 +181,10 @@ class InfrastructureService {
       });
       summary += `\n`;
     }
-    
+
     summary += `� Closest landmark: ${closest.name} (${closest.distance}m away)\n`;
     summary += `📊 Total infrastructure points found: ${infrastructure.length}`;
-    
+
     return summary;
   }
 
@@ -189,14 +193,14 @@ class InfrastructureService {
    */
   getUniqueInfrastructureByType(infrastructure) {
     const typeMap = new Map();
-    
+
     infrastructure.forEach(infra => {
       const type = infra.infrastructureType;
       if (!typeMap.has(type) || infra.distance < typeMap.get(type).distance) {
         typeMap.set(type, infra);
       }
     });
-    
+
     return Array.from(typeMap.values()).sort((a, b) => {
       // Sort by priority first, then by distance
       const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
@@ -245,7 +249,7 @@ class InfrastructureService {
     };
 
     const relevantTypes = relevanceMap[complaintType] || [];
-    return infrastructure.filter(infra => 
+    return infrastructure.filter(infra =>
       relevantTypes.includes(infra.infrastructureType)
     );
   }

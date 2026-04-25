@@ -1,5 +1,6 @@
-// Load environment variables from the project .env (no hardcoded absolute paths)
-require('dotenv').config();
+// Load environment variables from the project .env (resolve relative to this file)
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -53,16 +54,16 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    
+
     // In development, allow all origins
     if (process.env.NODE_ENV !== 'production') {
       return callback(null, true);
     }
-    
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -106,8 +107,8 @@ app.use('/api/feedback', require('./routes/feedback'));
 
 // Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
+  res.status(200).json({
+    status: 'OK',
     message: 'CivicStack Backend Server is running',
     timestamp: new Date().toISOString()
   });
@@ -115,7 +116,7 @@ app.get('/health', (req, res) => {
 
 // Root route
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Welcome to CivicStack API',
     version: '1.0.0',
     endpoints: [
@@ -134,7 +135,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({
     success: false,
     message: 'Something went wrong!',
-  error: process.env.NODE_ENV === 'development' ? err.message : {}
+    error: process.env.NODE_ENV === 'development' ? err.message : {}
   });
 });
 
@@ -146,7 +147,7 @@ app.use((req, res) => {
   });
 });
 
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, host, () => {
   console.log(`🚀 CivicStack Backend Server is running on ${url}`);
   console.log(`📊 Health check: ${url}/health`);
   console.log(`📱 API endpoints: ${url}/api`);

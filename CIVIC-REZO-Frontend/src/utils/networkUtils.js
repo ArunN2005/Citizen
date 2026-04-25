@@ -19,7 +19,7 @@ const getApiHost = () => {
   }
 
   // Mobile fallback - this should be set by setup-network.js
-  return '10.12.73.132';
+  return 'localhost';
 };
 
 /**
@@ -43,12 +43,12 @@ export const generateApiBaseUrl = () => {
   // Build URL from components
   const host = getApiHost();
   const port = getApiPort();
-  const url = `https://civic-rezo-backend-1.onrender.com`;
-  
+  const url = `http://${host}:${port}`;
+
   console.log('📡 Generated API URL:', url);
   console.log('🔧 Host:', host);
   console.log('🔧 Port:', port);
-  
+
   return url;
 };
 

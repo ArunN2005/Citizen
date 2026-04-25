@@ -9,10 +9,10 @@ const generateApiBaseUrl = () => {
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
-  
-  const host = process.env.EXPO_PUBLIC_API_HOST || '10.12.73.132';
+
+  const host = process.env.EXPO_PUBLIC_API_HOST || 'localhost';
   const port = process.env.EXPO_PUBLIC_API_PORT || '3001';
-  return `https://civic-rezo-backend-1.onrender.com`;
+  return `http://${host}:${port}`;
 };
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://edragfuoklcgdgtospuq.supabase.co';
@@ -42,10 +42,10 @@ console.log('🔧 Development mode:', __DEV__);
 export const apiClient = {
   // Base URL for constructing custom endpoints
   baseUrl: API_BASE_URL,
-  
+
   // Health check endpoint
   health: `${API_BASE_URL}/health`,
-  
+
   // Auth endpoints
   auth: {
     login: `${API_BASE_URL}/api/auth/login`,
@@ -74,9 +74,9 @@ export const apiClient = {
 export const makeApiCall = async (url, options = {}) => {
   try {
     console.log('📡 Making API call to:', url);
-    
+
     const token = await AsyncStorage.getItem('authToken');
-    
+
     const defaultOptions = {
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export const makeApiCall = async (url, options = {}) => {
 
     const response = await fetch(url, mergedOptions);
     console.log('📥 Response status:', response.status);
-    
+
     const data = await response.json();
     console.log('📋 Response data:', data);
 
@@ -118,12 +118,12 @@ export const makeApiCall = async (url, options = {}) => {
       url,
       stack: error.stack
     });
-    
+
     // Provide more specific error messages
     if (error.message.includes('Network request failed')) {
       throw new Error('Cannot connect to server. Make sure the backend is running and accessible.');
     }
-    
+
     throw error;
   }
 };

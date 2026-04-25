@@ -27,7 +27,8 @@
         {
           "cameraPermission": "This app needs camera access to capture images of civic issues for complaint submission."
         }
-      ]
+      ],
+      "expo-maps"
     ],
     "ios": {
       "supportsTablet": true,
@@ -46,6 +47,7 @@
     },
     "android": {
       "package": "com.civicrezo",
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

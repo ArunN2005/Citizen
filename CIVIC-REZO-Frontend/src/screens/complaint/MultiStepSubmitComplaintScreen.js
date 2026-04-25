@@ -34,13 +34,13 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
     category: '',
     locationData: null,
     locationPriorityScore: null,
-    
+
     // Step 2: Title and description
     title: '',
     description: '',
     selectedLang: 'hi-IN',
     emotionScore: null,
-    
+
     // Step 3: Image and validation
     selectedImage: null,
     imageValidation: null,
@@ -51,18 +51,19 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
   const [validatingImage, setValidatingImage] = useState(false);
   const [autoCapturingLocation, setAutoCapturingLocation] = useState(false);
   const [locationCaptured, setLocationCaptured] = useState(false);
-  
+
   // Voice input states
   const [isRecording, setIsRecording] = useState(false);
   const [voiceError, setVoiceError] = useState(null);
   const [speechService] = useState(new SarvamSpeechService());
-  
+  const lastTranslationRef = useRef(null);
+
   // Language picker modal state
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  
+
   // Infrastructure modal state
   const [showInfrastructureModal, setShowInfrastructureModal] = useState(false);
-  
+
   // Submission result
   const [submissionResult, setSubmissionResult] = useState(null);
   const [nearbyInfrastructure, setNearbyInfrastructure] = useState(null);
@@ -91,17 +92,17 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
     { value: 'fire_hazard', label: 'Fire Hazard', urgency: 'urgent', icon: '🚨' },
     { value: 'electrical_danger', label: 'Electrical Danger', urgency: 'urgent', icon: '⚡' },
     { value: 'sewage_overflow', label: 'Sewage Overflow', urgency: 'urgent', icon: '🚰' },
-    
+
     // Safety Issues
     { value: 'broken_streetlight', label: 'Broken Streetlight', urgency: 'safety', icon: '💡' },
     { value: 'traffic_signal', label: 'Traffic Signal Issue', urgency: 'safety', icon: '🚦' },
-    
+
     // General Infrastructure
     { value: 'pothole', label: 'Pothole', urgency: 'general', icon: '🕳️' },
     { value: 'road_damage', label: 'Road Damage', urgency: 'general', icon: '�️' },
     { value: 'water_leakage', label: 'Water Leakage', urgency: 'general', icon: '💧' },
     { value: 'garbage_collection', label: 'Garbage Collection', urgency: 'general', icon: '🗑️' },
-    
+
     // Other Issues
     { value: 'others', label: 'Others', urgency: 'general', icon: '�' },
   ];
@@ -118,7 +119,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
 
   const handleDescriptionChange = useCallback((text) => {
     setComplaintData(prev => ({ ...prev, description: text }));
-    
+
     // Debounced emotion analysis
     if (text.trim().length > 10) {
       setTimeout(() => {
@@ -133,14 +134,14 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
   // Emotion analysis function
   const analyzeEmotion = useCallback(async (text) => {
     if (!text || text.trim().length < 10) return;
-    
+
     console.log('🧠 Starting emotion analysis for text:', text.substring(0, 50) + '...');
     console.log('🌐 API_BASE_URL:', API_BASE_URL);
-    
+
     try {
       const apiUrl = `${API_BASE_URL}/api/emotion/analyze`;
       console.log('📡 Calling emotion API:', apiUrl);
-      
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -148,16 +149,17 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         },
         body: JSON.stringify({
           text: text,
+          translation: lastTranslationRef.current || null,
           category: complaintData.category || 'general'
         }),
       });
 
       console.log('📊 Emotion API response status:', response.status);
-      
+
       if (response.ok) {
         const result = await response.json();
         console.log('✅ Emotion analysis result:', result);
-        
+
         if (result.success && result.data) {
           const emotionData = {
             score: (result.data.emotionScore * 100).toFixed(1),
@@ -165,11 +167,11 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             analysisMethod: result.data.analysisMethod,
             language: result.data.language
           };
-          
+
           console.log('💡 Setting emotion data:', emotionData);
-          
-          setComplaintData(prev => ({ 
-            ...prev, 
+
+          setComplaintData(prev => ({
+            ...prev,
             emotionScore: emotionData
           }));
         } else {
@@ -202,19 +204,23 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         if (result && result.value && result.value.length > 0) {
           const voiceText = result.value[0];
           console.log('🎤 Voice input result:', voiceText);
-          
+
           // Use handleDescriptionChange to ensure emotion analysis is triggered
           handleDescriptionChange(voiceText);
         }
       },
       onTranslation: (translation) => {
         console.log('Translation received:', translation);
+        if (translation && translation.trim().length > 0) {
+          lastTranslationRef.current = translation;
+          console.log('🌐 Stored English translation for emotion analysis:', translation);
+        }
       },
       onError: (error) => {
         console.error('Speech recognition error:', error);
         setVoiceError(error.error?.message || 'Error in speech recognition');
         setIsRecording(false);
-        
+
         Alert.alert(
           'Speech Recognition Error',
           `There was an error processing your speech. Please try again or type your description.`,
@@ -226,7 +232,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         console.log('Speech recognition ended');
       }
     });
-    
+
     return () => {
       // Clean up speech service on component unmount
       if (isRecording) {
@@ -253,10 +259,10 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
               currentStep >= step.number && styles.progressStepActive,
               currentStep === step.number && styles.progressStepCurrent
             ]}>
-              <Ionicons 
-                name={step.icon} 
-                size={20} 
-                color={currentStep >= step.number ? '#fff' : '#666'} 
+              <Ionicons
+                name={step.icon}
+                size={20}
+                color={currentStep >= step.number ? '#fff' : '#666'}
               />
               <Text style={[
                 styles.progressStepText,
@@ -309,7 +315,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
   const Step1IssueTypeSelection = () => {
     const handleCategorySelect = async (category) => {
       setComplaintData(prev => ({ ...prev, category }));
-      
+
       // Auto-capture location after category selection
       if (!locationCaptured) {
         await autoCaptureLo‌‌cation(category);
@@ -318,35 +324,35 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
 
     const autoCaptureLo‌‌cation = async (category) => {
       if (autoCapturingLocation || locationCaptured) return;
-      
+
       setAutoCapturingLocation(true);
-      
+
       try {
         // Get recommended privacy level for the complaint type
         const recommendedPrivacy = LocationService.getRecommendedPrivacyLevel(category);
-        
+
         // Show user-friendly message about location capture
         const urgencyLevel = LocationService.determineUrgencyLevel(category);
         const isUrgent = urgencyLevel === 'urgent';
-        
+
         Alert.alert(
           '📍 Location Required',
-          isUrgent 
+          isUrgent
             ? `For ${category} complaints, we need your exact location to prioritize emergency response. This helps us route your complaint to the nearest response team.`
             : `We'll capture your location to help prioritize your complaint and route it to the correct municipal office. Your privacy is protected with street-level accuracy.`,
           [
-            { 
-              text: 'Cancel', 
+            {
+              text: 'Cancel',
               style: 'cancel',
               onPress: () => setAutoCapturingLocation(false)
             },
-            { 
-              text: isUrgent ? 'Allow Exact Location' : 'Allow Location', 
+            {
+              text: isUrgent ? 'Allow Exact Location' : 'Allow Location',
               onPress: () => proceedWithLocationCapture(recommendedPrivacy, category)
             }
           ]
         );
-        
+
       } catch (error) {
         console.error('Auto location capture error:', error);
         setAutoCapturingLocation(false);
@@ -357,16 +363,16 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
       try {
         // Capture location with recommended privacy level
         const location = await LocationService.getLocationWithPrivacy(privacyLevel, category);
-        
+
         setComplaintData(prev => ({ ...prev, locationData: location }));
         setLocationCaptured(true);
-        
+
         // Immediately calculate priority score
         await calculateLocationPriority(location, category);
-        
+
         // Get nearby infrastructure after location capture
         await loadNearbyInfrastructure(location);
-        
+
         // Show success message with location info
         Alert.alert(
           '✅ Location Captured Successfully!',
@@ -375,7 +381,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           `Your complaint will be prioritized based on nearby infrastructure.`,
           [{ text: 'Continue', style: 'default' }]
         );
-        
+
       } catch (error) {
         console.error('Location capture error:', error);
         Alert.alert(
@@ -408,11 +414,11 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             }
           }),
         });
-        
+
         if (response.ok) {
           const priorityResult = await response.json();
           setComplaintData(prev => ({ ...prev, locationPriorityScore: priorityResult }));
-          
+
           // Show priority notification for high-priority complaints
           if (priorityResult.priorityLevel === 'CRITICAL') {
             Alert.alert(
@@ -424,7 +430,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         } else {
           console.error('Priority calculation failed:', response.status);
         }
-        
+
       } catch (error) {
         console.error('Failed to calculate location priority:', error);
       }
@@ -439,21 +445,21 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
       setIsLoadingInfrastructure(true);
       try {
         console.log('Loading nearby infrastructure for location:', location);
-        
+
         const infrastructure = await InfrastructureService.getNearbyInfrastructure(
           location.latitude,
           location.longitude,
           2000 // 2km radius
         );
-        
+
         console.log('Nearby infrastructure found:', infrastructure);
         setNearbyInfrastructure(infrastructure);
-        
+
         // Show infrastructure report to user in a custom modal
         if (infrastructure && (infrastructure.infrastructure?.length > 0 || infrastructure.summary)) {
           setShowInfrastructureModal(true);
         }
-        
+
       } catch (error) {
         console.error('Error loading nearby infrastructure:', error);
       } finally {
@@ -466,10 +472,10 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         Alert.alert('Error', 'Please select a complaint category');
         return;
       }
-      
+
       if (!complaintData.locationData) {
         Alert.alert(
-          'Location Required', 
+          'Location Required',
           'Location is required for priority assessment. Would you like to capture your location now?',
           [
             { text: 'Cancel', style: 'cancel' },
@@ -483,7 +489,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
     };
 
     return (
-      <KeyboardAwareScrollView 
+      <KeyboardAwareScrollView
         style={styles.stepContainer}
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
@@ -519,8 +525,8 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
                     styles.categoryUrgency,
                     category.urgency === 'urgent' && styles.categoryUrgencyHigh
                   ]}>
-                    {category.urgency === 'urgent' ? '🚨 Urgent' : 
-                     category.urgency === 'safety' ? '⚠️ Safety' : '📋 General'}
+                    {category.urgency === 'urgent' ? '🚨 Urgent' :
+                      category.urgency === 'safety' ? '⚠️ Safety' : '📋 General'}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -535,7 +541,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             <Text style={styles.locationStatusText}>🔍 Capturing your location...</Text>
           </View>
         )}
-        
+
         {locationCaptured && complaintData.locationData && (
           <View style={styles.locationCapturedContainer}>
             <Text style={styles.locationCapturedTitle}>✅ Location Captured Successfully</Text>
@@ -568,7 +574,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           <View style={styles.infrastructureContainer}>
             <Text style={styles.infrastructureTitle}>🏢 Nearby Infrastructure</Text>
             <Text style={styles.infrastructureSummary}>{nearbyInfrastructure.summary}</Text>
-            
+
             <View style={styles.infrastructureList}>
               {nearbyInfrastructure.places.slice(0, 3).map((place, index) => (
                 <View key={index} style={styles.infrastructureItem}>
@@ -611,7 +617,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
   const Step2TitleAndDescription = () => {
     const startVoiceInput = async () => {
       setVoiceError(null);
-      
+
       try {
         // Request audio recording permissions
         const { status } = await Audio.requestPermissionsAsync();
@@ -619,11 +625,11 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           Alert.alert('Permission Required', 'Please allow microphone access to record your complaint.');
           return;
         }
-        
+
         // Start recording with Sarvam Speech Service using the selected language
         console.log(`Starting speech recognition with language: ${complaintData.selectedLang}`);
         await speechService.startSpeech(complaintData.selectedLang);
-        
+
       } catch (err) {
         console.error('Speech recognition setup error:', err);
         setVoiceError(err.message);
@@ -658,7 +664,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
     };
 
     return (
-      <KeyboardAwareScrollView 
+      <KeyboardAwareScrollView
         style={styles.container}
         contentContainerStyle={styles.scrollContentContainer}
         enableOnAndroid={true}
@@ -679,236 +685,236 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             </Text>
           </View>
 
-        {/* Selected Category Display */}
-        <View style={styles.selectedCategoryDisplay}>
-          <Text style={styles.selectedCategoryTitle}>Selected Issue Type:</Text>
-          <View style={styles.selectedCategoryChip}>
-            <Text style={styles.selectedCategoryChipText}>
-              {selectedCategory?.icon} {' '}
-              {selectedCategory?.label}
-            </Text>
-          </View>
-        </View>
-
-        {/* Title Input - Custom Component */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>Complaint Title *</Text>
-          <CustomTextInput
-            value={complaintData.title}
-            onChangeText={handleTitleChange}
-            placeholder="Brief title describing the issue"
-            maxLength={100}
-            multiline={false}
-            style={styles.customInputContainer}
-          />
-          <Text style={styles.characterCount}>{complaintData.title.length}/100</Text>
-        </View>
-
-        {/* Language Picker - Enhanced */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>Select Language for Voice Input</Text>
-          <TouchableOpacity 
-            style={styles.customLanguageSelector}
-            onPress={() => setShowLanguagePicker(true)}
-          >
-            <View style={styles.languageSelectorContent}>
-              <View style={styles.selectedLanguageDisplay}>
-                <Ionicons name="language" size={24} color="#2E7D32" />
-                <View style={styles.languageTextContainer}>
-                  <Text style={styles.selectedLanguageText}>
-                    {languageOptions.find(lang => lang.value === complaintData.selectedLang)?.label || 'Hindi (हिंदी)'}
-                  </Text>
-                  <Text style={styles.selectedLanguageSubtext}>
-                    {languageOptions.find(lang => lang.value === complaintData.selectedLang)?.nativeName || 'हिंदी'}
-                  </Text>
-                </View>
-              </View>
-              <Ionicons name="chevron-down" size={20} color="#666" />
+          {/* Selected Category Display */}
+          <View style={styles.selectedCategoryDisplay}>
+            <Text style={styles.selectedCategoryTitle}>Selected Issue Type:</Text>
+            <View style={styles.selectedCategoryChip}>
+              <Text style={styles.selectedCategoryChipText}>
+                {selectedCategory?.icon} {' '}
+                {selectedCategory?.label}
+              </Text>
             </View>
-          </TouchableOpacity>
-          <Text style={styles.languageHelper}>
-            🎙️ Voice input will be processed in the selected language
+          </View>
 
-
-
-
-          </Text>
-        </View>
-
-        {/* Description Input - Custom Component */}
-        <View style={styles.inputSection}>
-          <Text style={styles.inputLabel}>Description *</Text>
-          <View style={styles.descriptionWrapper}>
+          {/* Title Input - Custom Component */}
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>Complaint Title *</Text>
             <CustomTextInput
-              value={complaintData.description}
-              onChangeText={handleDescriptionChange}
-              placeholder="Detailed description of the civic issue"
-              maxLength={500}
-              multiline={true}
+              value={complaintData.title}
+              onChangeText={handleTitleChange}
+              placeholder="Brief title describing the issue"
+              maxLength={100}
+              multiline={false}
               style={styles.customInputContainer}
             />
+            <Text style={styles.characterCount}>{complaintData.title.length}/100</Text>
           </View>
-          
-          {/* Voice Button - Separate from input */}
-          <View style={styles.voiceButtonContainer}>
-            <TouchableOpacity 
-              style={styles.voiceButtonEnhanced}
-              onPress={isRecording ? stopVoiceInput : startVoiceInput} 
-              disabled={loading}
+
+          {/* Language Picker - Enhanced */}
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>Select Language for Voice Input</Text>
+            <TouchableOpacity
+              style={styles.customLanguageSelector}
+              onPress={() => setShowLanguagePicker(true)}
             >
-              <Ionicons 
-                name={isRecording ? 'mic' : 'mic-outline'} 
-                size={24} 
-                color={isRecording ? '#2E7D32' : loading ? '#ccc' : '#666'} 
+              <View style={styles.languageSelectorContent}>
+                <View style={styles.selectedLanguageDisplay}>
+                  <Ionicons name="language" size={24} color="#2E7D32" />
+                  <View style={styles.languageTextContainer}>
+                    <Text style={styles.selectedLanguageText}>
+                      {languageOptions.find(lang => lang.value === complaintData.selectedLang)?.label || 'Hindi (हिंदी)'}
+                    </Text>
+                    <Text style={styles.selectedLanguageSubtext}>
+                      {languageOptions.find(lang => lang.value === complaintData.selectedLang)?.nativeName || 'हिंदी'}
+                    </Text>
+                  </View>
+                </View>
+                <Ionicons name="chevron-down" size={20} color="#666" />
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.languageHelper}>
+              🎙️ Voice input will be processed in the selected language
+
+
+
+
+            </Text>
+          </View>
+
+          {/* Description Input - Custom Component */}
+          <View style={styles.inputSection}>
+            <Text style={styles.inputLabel}>Description *</Text>
+            <View style={styles.descriptionWrapper}>
+              <CustomTextInput
+                value={complaintData.description}
+                onChangeText={handleDescriptionChange}
+                placeholder="Detailed description of the civic issue"
+                maxLength={500}
+                multiline={true}
+                style={styles.customInputContainer}
               />
-              <Text style={[
-                styles.voiceButtonText,
-                isRecording && styles.voiceButtonTextActive
-              ]}>
-                {isRecording ? 'Stop Recording' : 'Voice Input'}
-              </Text>
+            </View>
+
+            {/* Voice Button - Separate from input */}
+            <View style={styles.voiceButtonContainer}>
+              <TouchableOpacity
+                style={styles.voiceButtonEnhanced}
+                onPress={isRecording ? stopVoiceInput : startVoiceInput}
+                disabled={loading}
+              >
+                <Ionicons
+                  name={isRecording ? 'mic' : 'mic-outline'}
+                  size={24}
+                  color={isRecording ? '#2E7D32' : loading ? '#ccc' : '#666'}
+                />
+                <Text style={[
+                  styles.voiceButtonText,
+                  isRecording && styles.voiceButtonTextActive
+                ]}>
+                  {isRecording ? 'Stop Recording' : 'Voice Input'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.characterCount}>{complaintData.description.length}/500</Text>
+
+            {/* Emotion Analysis Score */}
+            {complaintData.emotionScore ? (
+              <View style={styles.emotionScoreContainer}>
+                <Text style={styles.emotionScoreLabel}>🧠 Emotion Analysis Results</Text>
+                <Text style={styles.emotionScoreValue}>
+                  Priority Impact: {complaintData.emotionScore.score}%
+                </Text>
+                <Text style={styles.emotionScoreMethod}>
+                  Method: {complaintData.emotionScore.analysisMethod || 'ai-powered'} ({complaintData.emotionScore.language || 'en'})
+                </Text>
+                {complaintData.emotionScore.emotions && (
+                  <View style={styles.emotionDetails}>
+                    <Text style={styles.emotionDetailText}>
+                      Urgency: {(complaintData.emotionScore.emotions.urgency * 100).toFixed(0)}% |
+                      Concern: {(complaintData.emotionScore.emotions.concern * 100).toFixed(0)}% |
+                      Frustration: {(complaintData.emotionScore.emotions.frustration * 100).toFixed(0)}%
+                    </Text>
+                    {complaintData.emotionScore.emotions.anger && (
+                      <Text style={styles.emotionDetailText}>
+                        Anger: {(complaintData.emotionScore.emotions.anger * 100).toFixed(0)}%
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View style={styles.emotionScoreContainer}>
+                <Text style={styles.emotionScoreLabel}>🧠 Emotion Analysis</Text>
+                <Text style={styles.emotionScoreMethod}>
+                  {complaintData.description.length < 10
+                    ? 'Write at least 10 characters for emotion analysis'
+                    : 'Analyzing emotions... (Auto-triggers after 1 second)'}
+                </Text>
+              </View>
+            )}
+
+            {complaintData.description.length > 10 && !complaintData.emotionScore && (
+              <View style={styles.emotionAnalyzingContainer}>
+                <ActivityIndicator size="small" color="#666" />
+                <Text style={styles.emotionAnalyzingText}>Analyzing emotion...</Text>
+              </View>
+            )}
+          </View>
+
+          {voiceError && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>⚠️ {voiceError}</Text>
+            </View>
+          )}
+
+          {/* Voice Recording Status */}
+          {isRecording && (
+            <View style={styles.recordingIndicator}>
+              <ActivityIndicator size="small" color="#2E7D32" />
+              <Text style={styles.recordingText}>🎤 Recording... Speak clearly</Text>
+            </View>
+          )}
+
+          {/* Navigation Buttons */}
+          <View style={styles.navigationButtons}>
+            <TouchableOpacity
+              style={styles.backNavigationButton}
+              onPress={goToPreviousStep}
+            >
+              <Ionicons name="chevron-back" size={20} color="#666" />
+              <Text style={styles.backNavigationText}>Back</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.continueButton,
+                (!complaintData.title.trim() || !complaintData.description.trim()) && styles.continueButtonDisabled
+              ]}
+              onPress={handleContinue}
+              disabled={!complaintData.title.trim() || !complaintData.description.trim()}
+            >
+              <Text style={styles.continueButtonText}>Continue to Photo</Text>
             </TouchableOpacity>
           </View>
-          
-          <Text style={styles.characterCount}>{complaintData.description.length}/500</Text>
-          
-          {/* Emotion Analysis Score */}
-          {complaintData.emotionScore ? (
-            <View style={styles.emotionScoreContainer}>
-              <Text style={styles.emotionScoreLabel}>🧠 Emotion Analysis Results</Text>
-              <Text style={styles.emotionScoreValue}>
-                Priority Impact: {complaintData.emotionScore.score}%
-              </Text>
-              <Text style={styles.emotionScoreMethod}>
-                Method: {complaintData.emotionScore.analysisMethod || 'ai-powered'} ({complaintData.emotionScore.language || 'en'})
-              </Text>
-              {complaintData.emotionScore.emotions && (
-                <View style={styles.emotionDetails}>
-                  <Text style={styles.emotionDetailText}>
-                    Urgency: {(complaintData.emotionScore.emotions.urgency * 100).toFixed(0)}% | 
-                    Concern: {(complaintData.emotionScore.emotions.concern * 100).toFixed(0)}% | 
-                    Frustration: {(complaintData.emotionScore.emotions.frustration * 100).toFixed(0)}%
-                  </Text>
-                  {complaintData.emotionScore.emotions.anger && (
-                    <Text style={styles.emotionDetailText}>
-                      Anger: {(complaintData.emotionScore.emotions.anger * 100).toFixed(0)}%
-                    </Text>
-                  )}
-                </View>
-              )}
-            </View>
-          ) : (
-            <View style={styles.emotionScoreContainer}>
-              <Text style={styles.emotionScoreLabel}>🧠 Emotion Analysis</Text>
-              <Text style={styles.emotionScoreMethod}>
-                {complaintData.description.length < 10 
-                  ? 'Write at least 10 characters for emotion analysis' 
-                  : 'Analyzing emotions... (Auto-triggers after 1 second)'}
-              </Text>
-            </View>
-          )}
-          
-          {complaintData.description.length > 10 && !complaintData.emotionScore && (
-            <View style={styles.emotionAnalyzingContainer}>
-              <ActivityIndicator size="small" color="#666" />
-              <Text style={styles.emotionAnalyzingText}>Analyzing emotion...</Text>
-            </View>
-          )}
-        </View>
 
-        {voiceError && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>⚠️ {voiceError}</Text>
-          </View>
-        )}
-
-        {/* Voice Recording Status */}
-        {isRecording && (
-          <View style={styles.recordingIndicator}>
-            <ActivityIndicator size="small" color="#2E7D32" />
-            <Text style={styles.recordingText}>🎤 Recording... Speak clearly</Text>
-          </View>
-        )}
-
-        {/* Navigation Buttons */}
-        <View style={styles.navigationButtons}>
-          <TouchableOpacity 
-            style={styles.backNavigationButton}
-            onPress={goToPreviousStep}
+          {/* Custom Language Picker Modal */}
+          <Modal
+            visible={showLanguagePicker}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setShowLanguagePicker(false)}
           >
-            <Ionicons name="chevron-back" size={20} color="#666" />
-            <Text style={styles.backNavigationText}>Back</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.continueButton,
-              (!complaintData.title.trim() || !complaintData.description.trim()) && styles.continueButtonDisabled
-            ]}
-            onPress={handleContinue}
-            disabled={!complaintData.title.trim() || !complaintData.description.trim()}
-          >
-            <Text style={styles.continueButtonText}>Continue to Photo</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Custom Language Picker Modal */}
-        <Modal
-          visible={showLanguagePicker}
-          transparent={true}
-          animationType="slide"
-          onRequestClose={() => setShowLanguagePicker(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.languagePickerModal}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Select Language</Text>
-                <TouchableOpacity 
-                  onPress={() => setShowLanguagePicker(false)}
-                  style={styles.modalCloseButton}
-                >
-                  <Ionicons name="close" size={24} color="#666" />
-                </TouchableOpacity>
-              </View>
-              
-              <ScrollView style={styles.languageList} showsVerticalScrollIndicator={false}>
-                {languageOptions.map((language) => (
+            <View style={styles.modalOverlay}>
+              <View style={styles.languagePickerModal}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>Select Language</Text>
                   <TouchableOpacity
-                    key={language.value}
-                    style={[
-                      styles.languageOption,
-                      complaintData.selectedLang === language.value && styles.selectedLanguageOption
-                    ]}
-                    onPress={() => {
-                      handleLanguageChange(language.value);
-                      setShowLanguagePicker(false);
-                    }}
+                    onPress={() => setShowLanguagePicker(false)}
+                    style={styles.modalCloseButton}
                   >
-                    <View style={styles.languageOptionContent}>
-                      <View style={styles.languageInfo}>
-                        <Text style={[
-                          styles.languageOptionLabel,
-                          complaintData.selectedLang === language.value && styles.selectedLanguageOptionText
-                        ]}>
-                          {language.label}
-                        </Text>
-                        <Text style={[
-                          styles.languageNativeName,
-                          complaintData.selectedLang === language.value && styles.selectedLanguageNativeText
-                        ]}>
-                          {language.nativeName}
-                        </Text>
-                      </View>
-                      {complaintData.selectedLang === language.value && (
-                        <Ionicons name="checkmark-circle" size={24} color="#2E7D32" />
-                      )}
-                    </View>
+                    <Ionicons name="close" size={24} color="#666" />
                   </TouchableOpacity>
-                ))}
-              </ScrollView>
+                </View>
+
+                <ScrollView style={styles.languageList} showsVerticalScrollIndicator={false}>
+                  {languageOptions.map((language) => (
+                    <TouchableOpacity
+                      key={language.value}
+                      style={[
+                        styles.languageOption,
+                        complaintData.selectedLang === language.value && styles.selectedLanguageOption
+                      ]}
+                      onPress={() => {
+                        handleLanguageChange(language.value);
+                        setShowLanguagePicker(false);
+                      }}
+                    >
+                      <View style={styles.languageOptionContent}>
+                        <View style={styles.languageInfo}>
+                          <Text style={[
+                            styles.languageOptionLabel,
+                            complaintData.selectedLang === language.value && styles.selectedLanguageOptionText
+                          ]}>
+                            {language.label}
+                          </Text>
+                          <Text style={[
+                            styles.languageNativeName,
+                            complaintData.selectedLang === language.value && styles.selectedLanguageNativeText
+                          ]}>
+                            {language.nativeName}
+                          </Text>
+                        </View>
+                        {complaintData.selectedLang === language.value && (
+                          <Ionicons name="checkmark-circle" size={24} color="#2E7D32" />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
         </View>
       </KeyboardAwareScrollView>
     );
@@ -920,7 +926,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
       try {
         // Request permissions
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        
+
         if (permissionResult.granted === false) {
           Alert.alert('Permission Required', 'Please allow access to your photo library to upload images.');
           return;
@@ -948,7 +954,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
       try {
         // Request permissions
         const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-        
+
         if (permissionResult.granted === false) {
           Alert.alert('Permission Required', 'Please allow access to your camera to take photos.');
           return;
@@ -974,10 +980,10 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
     const validateImage = async (imageAsset) => {
       if (!imageAsset) return;
       setValidatingImage(true);
-      
+
       try {
         console.log('🔍 Starting image validation...');
-        
+
         // 1. Upload image to Cloudinary
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dsvc9y4rq/image/upload';
         const UPLOAD_PRESET = 'damage';
@@ -988,17 +994,17 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           name: imageAsset.fileName || 'civic-image.jpg',
         });
         data.append('upload_preset', UPLOAD_PRESET);
-        
+
         const cloudRes = await fetch(CLOUDINARY_URL, {
           method: 'POST',
           body: data,
         });
         const cloudResult = await cloudRes.json();
-        
+
         if (!cloudResult.secure_url) throw new Error('Cloudinary upload failed');
-        
+
         console.log('✅ Image uploaded to Cloudinary:', cloudResult.secure_url);
-        
+
         // Update selectedImage to use Cloudinary URL
         setComplaintData(prev => ({
           ...prev,
@@ -1009,7 +1015,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             publicId: cloudResult.public_id
           }
         }));
-        
+
         // 2. Send imageUrl to backend for validation
         const validateRes = await fetch(`${API_BASE_URL}/api/image-analysis/validate-image`, {
           method: 'POST',
@@ -1017,7 +1023,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           body: JSON.stringify({ imageUrl: cloudResult.secure_url }),
         });
         const result = await validateRes.json();
-        
+
         console.log('📋 Validation result:', result);
 
         // Process validation result
@@ -1030,12 +1036,12 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           data: result.data || {},
           raw: result.raw || null,
         };
-        
+
         setComplaintData(prev => ({ ...prev, imageValidation: validationData }));
-        
+
         // Show validation result
         const displayConfidence = validationData.modelConfidence >= 0.7 ? validationData.modelConfidence : validationData.confidence;
-        
+
         if (validationData.allowUpload) {
           Alert.alert(
             '✅ Valid Civic Issue Detected!',
@@ -1052,7 +1058,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             ]
           );
         }
-        
+
       } catch (error) {
         console.error('❌ Image validation error:', error);
         Alert.alert(
@@ -1091,7 +1097,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
 
     const submitComplaint = async () => {
       setLoading(true);
-      
+
       try {
         // Prepare submission data
         const submissionData = {
@@ -1120,7 +1126,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             language: complaintData.emotionScore.language
           } : null
         };
-        
+
         console.log('📤 Submitting complaint with comprehensive data:', submissionData);
 
         // Submit to comprehensive endpoint using makeApiCall
@@ -1130,7 +1136,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         });
 
         console.log('📋 Response data:', result);
-        
+
         if (result.success) {
           setSubmissionResult(result);
           goToNextStep(); // Go to success page
@@ -1141,10 +1147,10 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
 
       } catch (error) {
         console.error('❌ Submission error:', error);
-        
+
         let errorMessage = 'Please check your connection and try again.';
         let errorTitle = 'Submission Failed';
-        
+
         if (error.message.includes('Network request failed')) {
           errorMessage = 'Cannot connect to server. Please check your internet connection.';
           errorTitle = 'Connection Error';
@@ -1160,9 +1166,9 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         } else if (error.message) {
           errorMessage = error.message;
         }
-        
+
         Alert.alert(
-          errorTitle, 
+          errorTitle,
           errorMessage,
           [
             { text: 'Retry', onPress: () => submitComplaint() },
@@ -1206,7 +1212,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
     };
 
     return (
-      <KeyboardAwareScrollView 
+      <KeyboardAwareScrollView
         style={styles.stepContainer}
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
@@ -1224,7 +1230,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           {complaintData.selectedImage ? (
             <View style={styles.selectedImageContainer}>
               <Image source={{ uri: complaintData.selectedImage.uri }} style={styles.selectedImage} />
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.changeImageButton}
                 onPress={() => setComplaintData(prev => ({ ...prev, selectedImage: null, imageValidation: null }))}
               >
@@ -1237,7 +1243,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
                 <Ionicons name="camera" size={32} color="#2E7D32" />
                 <Text style={styles.imagePickerText}>Take Photo</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
                 <Ionicons name="images" size={32} color="#2E7D32" />
                 <Text style={styles.imagePickerText}>Choose from Gallery</Text>
@@ -1250,7 +1256,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
 
         {/* Navigation Buttons */}
         <View style={styles.navigationButtons}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backNavigationButton}
             onPress={goToPreviousStep}
           >
@@ -1299,13 +1305,13 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         location: complaintData.locationData.description || complaintData.locationData.address,
         created_at: new Date().toISOString()
       };
-      
+
       navigation.navigate('ComplaintMap', { newComplaint });
     };
 
     return (
-      <KeyboardAwareScrollView 
-        style={styles.stepContainer} 
+      <KeyboardAwareScrollView
+        style={styles.stepContainer}
         contentContainerStyle={styles.successContainer}
         enableOnAndroid={true}
         keyboardShouldPersistTaps="handled"
@@ -1322,17 +1328,17 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
 
         <View style={styles.complaintDetailsCard}>
           <Text style={styles.detailsCardTitle}>📋 Complaint Details</Text>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Complaint ID:</Text>
             <Text style={styles.detailValue}>{submissionResult.complaint.id}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Title:</Text>
             <Text style={styles.detailValue}>{complaintData.title}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Category:</Text>
             <Text style={styles.detailValue}>
@@ -1340,27 +1346,27 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
               {complaintCategories.find(cat => cat.value === complaintData.category)?.label}
             </Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Status:</Text>
             <Text style={styles.detailValue}>{submissionResult.complaint.status || 'Pending'}</Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Priority Level:</Text>
             <Text style={[styles.detailValue, styles.priorityText]}>
-              {submissionResult.priorityAnalysis?.priorityLevel || 'MEDIUM'} 
+              {submissionResult.priorityAnalysis?.priorityLevel || 'MEDIUM'}
               ({Math.round((submissionResult.priorityAnalysis?.totalScore || 0) * 100)}%)
             </Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Location Accuracy:</Text>
             <Text style={styles.detailValue}>
               ±{complaintData.locationData.radiusM}m ({complaintData.locationData.precision})
             </Text>
           </View>
-          
+
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Submitted:</Text>
             <Text style={styles.detailValue}>{new Date().toLocaleString()}</Text>
@@ -1390,9 +1396,9 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             <Ionicons name="map" size={20} color="#fff" />
             <Text style={styles.mapButtonText}>View on Map</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.doneButton} 
+
+          <TouchableOpacity
+            style={styles.doneButton}
             onPress={() => navigation.navigate('FeedbackScreen', {
               complaintId: submissionResult.complaint.id,
               complaintTitle: complaintData.title
@@ -1408,7 +1414,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={currentStep > 1 ? goToPreviousStep : () => navigation.goBack()}
         >
@@ -1433,21 +1439,21 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           <View style={styles.infrastructureModal}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>🏢 Nearby Infrastructure Report</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => setShowInfrastructureModal(false)}
                 style={styles.modalCloseButton}
               >
                 <Ionicons name="close" size={24} color="#666" />
               </TouchableOpacity>
             </View>
-            
+
             <ScrollView style={styles.infrastructureModalContent} showsVerticalScrollIndicator={false}>
               {nearbyInfrastructure?.infrastructure?.length > 0 ? (
                 <>
                   <Text style={styles.infrastructureModalSubtitle}>
                     📍 Location captured successfully! Here are the facilities near your location:
                   </Text>
-                  
+
                   {/* Essential Services */}
                   {nearbyInfrastructure.infrastructure
                     .filter(infra => infra.priority === 'high')
@@ -1458,33 +1464,33 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
                       return unique;
                     }, [])
                     .length > 0 && (
-                    <>
-                      <Text style={styles.infrastructureSectionTitle}>🚨 Essential Services</Text>
-                      {nearbyInfrastructure.infrastructure
-                        .filter(infra => infra.priority === 'high')
-                        .reduce((unique, infra) => {
-                          if (!unique.find(u => u.infrastructureType === infra.infrastructureType)) {
-                            unique.push(infra);
-                          }
-                          return unique;
-                        }, [])
-                        .map((infra, index) => (
-                          <View key={`high-${index}`} style={styles.infrastructureModalItem}>
-                            <View style={styles.infrastructureItemHeader}>
-                              <Text style={styles.infrastructureItemType}>
-                                {infra.infrastructureType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                              </Text>
-                              <Text style={styles.infrastructureItemDistance}>{infra.distance}m away</Text>
+                      <>
+                        <Text style={styles.infrastructureSectionTitle}>🚨 Essential Services</Text>
+                        {nearbyInfrastructure.infrastructure
+                          .filter(infra => infra.priority === 'high')
+                          .reduce((unique, infra) => {
+                            if (!unique.find(u => u.infrastructureType === infra.infrastructureType)) {
+                              unique.push(infra);
+                            }
+                            return unique;
+                          }, [])
+                          .map((infra, index) => (
+                            <View key={`high-${index}`} style={styles.infrastructureModalItem}>
+                              <View style={styles.infrastructureItemHeader}>
+                                <Text style={styles.infrastructureItemType}>
+                                  {infra.infrastructureType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                </Text>
+                                <Text style={styles.infrastructureItemDistance}>{infra.distance}m away</Text>
+                              </View>
+                              <Text style={styles.infrastructureItemName}>{infra.name}</Text>
+                              {infra.vicinity && (
+                                <Text style={styles.infrastructureItemVicinity}>{infra.vicinity}</Text>
+                              )}
                             </View>
-                            <Text style={styles.infrastructureItemName}>{infra.name}</Text>
-                            {infra.vicinity && (
-                              <Text style={styles.infrastructureItemVicinity}>{infra.vicinity}</Text>
-                            )}
-                          </View>
-                        ))}
-                    </>
-                  )}
-                  
+                          ))}
+                      </>
+                    )}
+
                   {/* Other Facilities */}
                   {nearbyInfrastructure.infrastructure
                     .filter(infra => infra.priority === 'medium')
@@ -1495,31 +1501,31 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
                       return unique;
                     }, [])
                     .length > 0 && (
-                    <>
-                      <Text style={styles.infrastructureSectionTitle}>🏢 Other Facilities</Text>
-                      {nearbyInfrastructure.infrastructure
-                        .filter(infra => infra.priority === 'medium')
-                        .reduce((unique, infra) => {
-                          if (!unique.find(u => u.infrastructureType === infra.infrastructureType)) {
-                            unique.push(infra);
-                          }
-                          return unique;
-                        }, [])
-                        .slice(0, 4)
-                        .map((infra, index) => (
-                          <View key={`medium-${index}`} style={styles.infrastructureModalItem}>
-                            <View style={styles.infrastructureItemHeader}>
-                              <Text style={styles.infrastructureItemType}>
-                                {infra.infrastructureType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                              </Text>
-                              <Text style={styles.infrastructureItemDistance}>{infra.distance}m away</Text>
+                      <>
+                        <Text style={styles.infrastructureSectionTitle}>🏢 Other Facilities</Text>
+                        {nearbyInfrastructure.infrastructure
+                          .filter(infra => infra.priority === 'medium')
+                          .reduce((unique, infra) => {
+                            if (!unique.find(u => u.infrastructureType === infra.infrastructureType)) {
+                              unique.push(infra);
+                            }
+                            return unique;
+                          }, [])
+                          .slice(0, 4)
+                          .map((infra, index) => (
+                            <View key={`medium-${index}`} style={styles.infrastructureModalItem}>
+                              <View style={styles.infrastructureItemHeader}>
+                                <Text style={styles.infrastructureItemType}>
+                                  {infra.infrastructureType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                </Text>
+                                <Text style={styles.infrastructureItemDistance}>{infra.distance}m away</Text>
+                              </View>
+                              <Text style={styles.infrastructureItemName}>{infra.name}</Text>
                             </View>
-                            <Text style={styles.infrastructureItemName}>{infra.name}</Text>
-                          </View>
-                        ))}
-                    </>
-                  )}
-                  
+                          ))}
+                      </>
+                    )}
+
                   <View style={styles.infrastructureModalFooter}>
                     <Text style={styles.infrastructureModalSummary}>
                       📊 Total facilities found: {nearbyInfrastructure.totalFound || nearbyInfrastructure.infrastructure.length}
@@ -1532,8 +1538,8 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
                 </Text>
               )}
             </ScrollView>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.infrastructureModalButton}
               onPress={() => setShowInfrastructureModal(false)}
             >
@@ -1956,7 +1962,7 @@ const styles = StyleSheet.create({
     color: '#2E7D32',
     marginTop: 2,
   },
-  
+
   // Modal Styles
   modalOverlay: {
     flex: 1,
