@@ -832,7 +832,7 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
                       {t('complaintDetail.concern')}: {(complaintData.emotionScore.emotions.concern * 100).toFixed(0)}% |
                       {t('complaintDetail.frustration')}: {(complaintData.emotionScore.emotions.frustration * 100).toFixed(0)}%
                     </Text>
-                    {complaintData.emotionScore.emotions.anger && (
+                    {!!complaintData.emotionScore.emotions.anger && (
                       <Text style={styles.emotionDetailText}>
                         {t('complaintDetail.anger')}: {(complaintData.emotionScore.emotions.anger * 100).toFixed(0)}%
                       </Text>
