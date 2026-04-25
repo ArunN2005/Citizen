@@ -32,16 +32,16 @@ const ComplaintMapScreen = ({ navigation, route }) => {
   // Fetch complaints data
   const fetchComplaints = async () => {
     try {
-      console.log('🔄 Fetching complaints from:', `${API_BASE_URL}/api/complaints/all`);
+      console.log(' Fetching complaints from:', `${API_BASE_URL}/api/complaints/all`);
       const response = await fetch(`${API_BASE_URL}/api/complaints/all`);
       const data = await response.json();
       
       if (data.success && data.complaints) {
-        console.log('✅ Fetched complaints:', data.complaints.length);
+        console.log(' Fetched complaints:', data.complaints.length);
         setComplaints(data.complaints);
       }
     } catch (error) {
-      console.error('❌ Error fetching complaints:', error);
+      console.error(' Error fetching complaints:', error);
       Alert.alert('Error', 'Failed to load complaints');
     } finally {
       setLoading(false);
@@ -187,7 +187,7 @@ const ComplaintMapScreen = ({ navigation, route }) => {
                   title={complaint.title}
                   description={complaint.description}
                   onPress={() => {
-                    console.log('📍 Marker pressed:', complaint.title);
+                    console.log(' Marker pressed:', complaint.title);
                     setSelectedComplaint(complaint);
                     setShowComplaintModal(true);
                   }}
@@ -205,12 +205,12 @@ const ComplaintMapScreen = ({ navigation, route }) => {
       {/* Stats */}
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>
-          📍 {complaints.length} Complaints Loaded
+           {complaints.length} Complaints Loaded
         </Text>
         <Text style={styles.statsText}>
-          🔴 {complaints.filter(c => c.status === 'pending').length} Pending • 
-          🟡 {complaints.filter(c => c.status === 'in_progress').length} Progress • 
-          🟢 {complaints.filter(c => c.status === 'completed').length} Resolved
+           {complaints.filter(c => c.status === 'pending').length} Pending • 
+           {complaints.filter(c => c.status === 'in_progress').length} Progress • 
+           {complaints.filter(c => c.status === 'completed').length} Resolved
         </Text>
       </View>
 

@@ -109,18 +109,18 @@ const CitizenManagement = ({ navigation }) => {
   const renderCitizenCard = (citizen) => {
     const getStatusColor = (status) => {
       const colors = {
-        'active': '#27ae60',
+        'active': '#1A1A1A',
         'inactive': '#95a5a6',
-        'banned': '#e74c3c',
-        'suspended': '#f39c12'
+        'banned': '#1A1A1A',
+        'suspended': '#1A1A1A'
       };
       return colors[status] || '#95a5a6';
     };
 
     const getEngagementLevel = (complaintsCount) => {
-      if (complaintsCount >= 10) return { level: 'High', color: '#e74c3c' };
-      if (complaintsCount >= 5) return { level: 'Medium', color: '#f39c12' };
-      if (complaintsCount >= 1) return { level: 'Low', color: '#3498db' };
+      if (complaintsCount >= 10) return { level: 'High', color: '#1A1A1A' };
+      if (complaintsCount >= 5) return { level: 'Medium', color: '#1A1A1A' };
+      if (complaintsCount >= 1) return { level: 'Low', color: '#1A1A1A' };
       return { level: 'None', color: '#95a5a6' };
     };
 
@@ -159,7 +159,7 @@ const CitizenManagement = ({ navigation }) => {
           </Text>
           
           <Text style={styles.citizenPhone} numberOfLines={1}>
-            📞 {citizen.phone_number || 'No phone number'}
+            {citizen.phone_number || 'No phone number'}
           </Text>
 
           {/* Stats Row */}
@@ -203,7 +203,7 @@ const CitizenManagement = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <LinearGradient colors={['#9b59b6', '#8e44ad']} style={styles.header}>
+      <LinearGradient colors={['#1A1A1A', '#1A1A1A']} style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
@@ -472,7 +472,7 @@ const CitizenManagement = ({ navigation }) => {
                 {/* Action Buttons */}
                 <View style={styles.modalActions}>
                   <TouchableOpacity 
-                    style={[styles.modalActionButton, { backgroundColor: '#3498db' }]}
+                    style={[styles.modalActionButton, { backgroundColor: '#1A1A1A' }]}
                     onPress={() => {
                       setShowCitizenModal(false);
                       navigation.navigate('AdminCitizenChat', { 
@@ -486,7 +486,7 @@ const CitizenManagement = ({ navigation }) => {
 
                   {selectedCitizen.status === 'active' ? (
                     <TouchableOpacity 
-                      style={[styles.modalActionButton, { backgroundColor: '#f39c12' }]}
+                      style={[styles.modalActionButton, { backgroundColor: '#1A1A1A' }]}
                       onPress={() => {
                         Alert.alert(
                           'Suspend Citizen',
@@ -506,7 +506,7 @@ const CitizenManagement = ({ navigation }) => {
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity 
-                      style={[styles.modalActionButton, { backgroundColor: '#27ae60' }]}
+                      style={[styles.modalActionButton, { backgroundColor: '#1A1A1A' }]}
                       onPress={() => updateCitizenStatus(selectedCitizen.id, 'active')}
                     >
                       <Ionicons name="checkmark-circle-outline" size={18} color="#fff" />
@@ -515,7 +515,7 @@ const CitizenManagement = ({ navigation }) => {
                   )}
 
                   <TouchableOpacity 
-                    style={[styles.modalActionButton, { backgroundColor: '#e74c3c' }]}
+                    style={[styles.modalActionButton, { backgroundColor: '#1A1A1A' }]}
                     onPress={() => {
                       Alert.alert(
                         'Ban Citizen',
@@ -545,10 +545,10 @@ const CitizenManagement = ({ navigation }) => {
 
   function getStatusColor(status) {
     const colors = {
-      'active': '#27ae60',
+      'active': '#1A1A1A',
       'inactive': '#95a5a6',
-      'banned': '#e74c3c',
-      'suspended': '#f39c12'
+      'banned': '#1A1A1A',
+      'suspended': '#1A1A1A'
     };
     return colors[status] || '#95a5a6';
   }
@@ -609,7 +609,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   activeSortButton: {
-    backgroundColor: '#9b59b6',
+    backgroundColor: '#1A1A1A',
   },
   sortButtonText: {
     fontSize: 14,
@@ -649,7 +649,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#9b59b6',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -751,7 +751,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loadMoreButton: {
-    backgroundColor: '#9b59b6',
+    backgroundColor: '#1A1A1A',
     margin: 15,
     padding: 12,
     borderRadius: 8,
@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#9b59b6',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   viewAllText: {
-    color: '#9b59b6',
+    color: '#1A1A1A',
     fontSize: 14,
     fontWeight: '600',
   },

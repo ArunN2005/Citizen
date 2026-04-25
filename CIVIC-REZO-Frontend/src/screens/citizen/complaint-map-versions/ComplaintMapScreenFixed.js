@@ -62,10 +62,10 @@ const ComplaintMapScreenFixed = ({ navigation, route }) => {
   // Fetch user's current location
   const fetchUserLocation = async () => {
     try {
-      console.log('🔍 Fetching user location...');
+      console.log(' Fetching user location...');
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        console.log('❌ Location permission denied');
+        console.log(' Location permission denied');
         setErrorMsg('Permission to access location was denied');
         return;
       }
@@ -78,7 +78,7 @@ const ComplaintMapScreenFixed = ({ navigation, route }) => {
         maximumAge: 10000 // Accept a location that's up to 10 seconds old
       });
       
-      console.log('📍 User location obtained:', 
+      console.log(' User location obtained:', 
         location.coords.latitude, 
         location.coords.longitude
       );
@@ -97,13 +97,13 @@ const ComplaintMapScreenFixed = ({ navigation, route }) => {
       
       // Animate map to user location if map reference is available
       if (mapRef && mapReady) {
-        console.log('🗺️ Animating map to user location');
+        console.log('️ Animating map to user location');
         mapRef.animateToRegion(newRegion, 1000);
       }
       
       setLoading(false);
     } catch (error) {
-      console.error("❌ Error getting location:", error);
+      console.error(" Error getting location:", error);
       setErrorMsg('Could not fetch location');
       setLoading(false);
     }
@@ -113,14 +113,14 @@ const ComplaintMapScreenFixed = ({ navigation, route }) => {
   const fetchHeatmapData = async () => {
     try {
       setLoading(true);
-      console.log('🔄 Fetching heatmap data...');
+      console.log(' Fetching heatmap data...');
       
       // Fetch from backend API
       const response = await fetch(apiClient.heatMap.data);
       const data = await response.json();
       
       if (data.success && data.data && data.data.points) {
-        console.log(`✅ Retrieved ${data.data.points.length} heatmap points`);
+        console.log(` Retrieved ${data.data.points.length} heatmap points`);
         
         // Format points for the heatmap
         const formattedPoints = data.data.points.map(point => ({
@@ -134,11 +134,11 @@ const ComplaintMapScreenFixed = ({ navigation, route }) => {
           point.longitude !== 0
         );
         
-        console.log(`✅ Formatted ${formattedPoints.length} valid heatmap points`);
+        console.log(` Formatted ${formattedPoints.length} valid heatmap points`);
         setHeatMapData(formattedPoints);
       }
     } catch (error) {
-      console.error('❌ Error fetching heatmap data:', error);
+      console.error(' Error fetching heatmap data:', error);
       Alert.alert('Error', 'Failed to load heatmap data');
     } finally {
       setLoading(false);

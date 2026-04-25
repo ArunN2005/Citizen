@@ -87,9 +87,9 @@ const PersonalReports = ({ navigation }) => {
 
   const renderTrackingStage = (stage, isActive, isCompleted, isLast) => {
     const getStageColor = () => {
-      if (isCompleted) return '#27ae60';
-      if (isActive) return '#3498db';
-      return '#bdc3c7';
+      if (isCompleted) return '#1A1A1A';
+      if (isActive) return '#1A1A1A';
+      return '#D1D5DB';
     };
 
     const getStageIcon = () => {
@@ -109,7 +109,7 @@ const PersonalReports = ({ navigation }) => {
           {!isLast && (
             <View style={[
               styles.stageLine, 
-              { backgroundColor: isCompleted ? '#27ae60' : '#bdc3c7' }
+              { backgroundColor: isCompleted ? '#1A1A1A' : '#D1D5DB' }
             ]} />
           )}
         </View>
@@ -132,19 +132,19 @@ const PersonalReports = ({ navigation }) => {
           
           {stage.officer && (
             <Text style={styles.stageAssignment}>
-              👮 {stage.officer}
+              Officer: {stage.officer}
             </Text>
           )}
           
           {stage.contractor && (
             <Text style={styles.stageAssignment}>
-              🔧 {stage.contractor}
+              Contractor: {stage.contractor}
             </Text>
           )}
           
           {stage.estimatedCost && (
             <Text style={styles.stageAssignment}>
-              💰 Estimated Cost: ₹{stage.estimatedCost}
+              Estimated Cost: ₹{stage.estimatedCost}
             </Text>
           )}
         </View>
@@ -155,9 +155,9 @@ const PersonalReports = ({ navigation }) => {
   const renderReportCard = (report) => {
     const getStatusColor = (status) => {
       const colors = {
-        'pending': '#f39c12',
-        'in_progress': '#3498db',
-        'resolved': '#27ae60',
+        'pending': '#1A1A1A',
+        'in_progress': '#1A1A1A',
+        'resolved': '#1A1A1A',
         'cancelled': '#95a5a6'
       };
       return colors[status] || '#95a5a6';
@@ -206,14 +206,15 @@ const PersonalReports = ({ navigation }) => {
         
         <View style={styles.reportMeta}>
           <Text style={styles.reportDate}>
-            📅 Submitted: {new Date(report.created_at).toLocaleDateString()}
+            Submitted: {new Date(report.created_at).toLocaleDateString()}
           </Text>
           <Text style={styles.reportLocation}>
-            📍 {report.location_address || 'Location not specified'}
+            {report.location_address || 'Location not specified'}
           </Text>
           <Text style={styles.reportCategory}>
-            📋 {report.category || 'General'}
+            {report.category || 'General'}
           </Text>
+
         </View>
         
         <View style={styles.progressIndicator}>
@@ -232,7 +233,7 @@ const PersonalReports = ({ navigation }) => {
         </View>
         
         <View style={styles.trackingButton}>
-          <Ionicons name="eye-outline" size={16} color="#3498db" />
+          <Ionicons name="eye-outline" size={16} color="#374151" />
           <Text style={styles.trackingButtonText}>View Tracking Details</Text>
         </View>
       </TouchableOpacity>
@@ -255,16 +256,13 @@ const PersonalReports = ({ navigation }) => {
       }
     >
       {/* Header */}
-      <LinearGradient
-        colors={['#2c3e50', '#3498db']}
-        style={styles.header}
-      >
+      <View style={styles.header}>
         <View style={styles.headerContent}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="arrow-back" size={24} color="white" />
+            <Ionicons name="arrow-back" size={24} color="#374151" />
           </TouchableOpacity>
           
           <Text style={styles.headerTitle}>My Reports</Text>
@@ -273,10 +271,10 @@ const PersonalReports = ({ navigation }) => {
             style={styles.logoutButton}
             onPress={handleLogout}
           >
-            <Ionicons name="log-out-outline" size={24} color="white" />
+            <Ionicons name="log-out-outline" size={24} color="#374151" />
           </TouchableOpacity>
         </View>
-      </LinearGradient>
+      </View>
 
       {/* Statistics */}
       <View style={styles.statsContainer}>
@@ -285,15 +283,15 @@ const PersonalReports = ({ navigation }) => {
           <Text style={styles.statLabel}>Total</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: '#27ae60' }]}>{stats.resolved || 0}</Text>
+          <Text style={[styles.statNumber, { color: '#1A1A1A' }]}>{stats.resolved || 0}</Text>
           <Text style={styles.statLabel}>Resolved</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: '#3498db' }]}>{stats.inProgress || 0}</Text>
+          <Text style={[styles.statNumber, { color: '#1A1A1A' }]}>{stats.inProgress || 0}</Text>
           <Text style={styles.statLabel}>In Progress</Text>
         </View>
         <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: '#f39c12' }]}>{stats.pending || 0}</Text>
+          <Text style={[styles.statNumber, { color: '#1A1A1A' }]}>{stats.pending || 0}</Text>
           <Text style={styles.statLabel}>Pending</Text>
         </View>
       </View>
@@ -328,7 +326,7 @@ const PersonalReports = ({ navigation }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>📦 Complaint Tracking</Text>
+            <Text style={styles.modalTitle}>Complaint Tracking</Text>
             <TouchableOpacity
               onPress={() => setShowTrackingModal(false)}
               style={styles.closeButton}
@@ -357,16 +355,16 @@ const PersonalReports = ({ navigation }) => {
                 
                 <View style={styles.reportModalMeta}>
                   <Text style={styles.modalMetaText}>
-                    📅 Submitted: {new Date(selectedReport.created_at).toLocaleDateString()} at {new Date(selectedReport.created_at).toLocaleTimeString()}
+                    Submitted: {new Date(selectedReport.created_at).toLocaleDateString()} at {new Date(selectedReport.created_at).toLocaleTimeString()}
                   </Text>
                   <Text style={styles.modalMetaText}>
-                    📍 Location: {selectedReport.location_address || 'Not specified'}
+                    Location: {selectedReport.location_address || 'Not specified'}
                   </Text>
                   <Text style={styles.modalMetaText}>
-                    📋 Category: {selectedReport.category || 'General'}
+                    Category: {selectedReport.category || 'General'}
                   </Text>
                   <Text style={styles.modalMetaText}>
-                    ⚡ Priority: {selectedReport.priority || 'Medium'}
+                    Priority: {selectedReport.priority || 'Medium'}
                   </Text>
                 </View>
               </View>
@@ -394,22 +392,25 @@ const PersonalReports = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
   loadingText: {
-    fontSize: 16,
-    color: '#7f8c8d',
+    fontSize: 14,
+    color: '#9CA3AF',
   },
   header: {
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 52,
+    paddingBottom: 16,
     paddingHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   headerContent: {
     flexDirection: 'row',
@@ -420,9 +421,10 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.2,
   },
   logoutButton: {
     padding: 8,
@@ -435,34 +437,33 @@ const styles = StyleSheet.create({
   },
   statCard: {
     alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+    borderRadius: 8,
     minWidth: 70,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   statNumber: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111827',
   },
   statLabel: {
-    fontSize: 12,
-    color: '#7f8c8d',
-    marginTop: 5,
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 4,
+    letterSpacing: 0.3,
   },
   reportsSection: {
     padding: 15,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
     marginBottom: 15,
+    letterSpacing: -0.2,
   },
   noReports: {
     alignItems: 'center',
@@ -489,10 +490,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   submitButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingVertical: 12,
     paddingHorizontal: 30,
-    borderRadius: 25,
+    borderRadius: 6,
   },
   submitButtonText: {
     color: 'white',
@@ -500,15 +501,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   reportCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
     padding: 15,
-    marginBottom: 15,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   reportHeader: {
     flexDirection: 'row',
@@ -518,15 +516,15 @@ const styles = StyleSheet.create({
   },
   reportTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontWeight: '600',
+    color: '#111827',
     flex: 1,
     marginRight: 10,
   },
   statusBadge: {
     paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 12,
+    borderRadius: 4,
   },
   statusText: {
     fontSize: 10,
@@ -592,7 +590,7 @@ const styles = StyleSheet.create({
   },
   trackingButtonText: {
     fontSize: 14,
-    color: '#3498db',
+    color: '#374151',
     marginLeft: 5,
     fontWeight: '500',
   },
@@ -700,7 +698,7 @@ const styles = StyleSheet.create({
   },
   stageAssignment: {
     fontSize: 12,
-    color: '#3498db',
+    color: '#374151',
     marginBottom: 2,
   },
 });

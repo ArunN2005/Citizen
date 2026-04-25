@@ -170,12 +170,12 @@ const AdminComplaintDetails = ({ route, navigation }) => {
 
   const getStatusColor = (status) => {
     const colors = {
-      'pending': '#f39c12',
-      'in_progress': '#3498db',
-      'completed': '#27ae60',
-      'cancelled': '#e74c3c',
-      'resolved': '#27ae60',
-      'rejected': '#e74c3c'
+      'pending': '#1A1A1A',
+      'in_progress': '#1A1A1A',
+      'completed': '#1A1A1A',
+      'cancelled': '#1A1A1A',
+      'resolved': '#1A1A1A',
+      'rejected': '#1A1A1A'
     };
     return colors[status] || '#95a5a6';
   };
@@ -221,7 +221,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <LinearGradient colors={['#3498db', '#2980b9']} style={styles.header}>
+      <LinearGradient colors={['#1A1A1A', '#1A1A1A']} style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
@@ -324,7 +324,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
               
               {currentStage.officers && (
                 <View style={styles.assignmentInfo}>
-                  <Ionicons name="person-outline" size={16} color="#3498db" />
+                  <Ionicons name="person-outline" size={16} color="#1A1A1A" />
                   <Text style={styles.assignmentText}>
                     Officer: {currentStage.officers.name} ({currentStage.officers.department})
                   </Text>
@@ -333,7 +333,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
 
               {currentStage.contractors && (
                 <View style={styles.assignmentInfo}>
-                  <Ionicons name="build-outline" size={16} color="#e67e22" />
+                  <Ionicons name="build-outline" size={16} color="#1A1A1A" />
                   <Text style={styles.assignmentText}>
                     Contractor: {currentStage.contractors.name}
                   </Text>
@@ -357,7 +357,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
             <Text style={styles.sectionTitle}>Stages Timeline</Text>
             {complaint.status !== 'resolved' && complaint.status !== 'rejected' && (
               <TouchableOpacity style={styles.addStageButton} onPress={addNextStage}>
-                <Ionicons name="add" size={20} color="#27ae60" />
+                <Ionicons name="add" size={20} color="#1A1A1A" />
                 <Text style={styles.addStageText}>Add Next Stage</Text>
               </TouchableOpacity>
             )}
@@ -438,7 +438,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
           <Text style={styles.sectionTitle}>Actions</Text>
           <View style={styles.actionButtons}>
             <TouchableOpacity 
-              style={[styles.actionButton, { backgroundColor: '#3498db' }]}
+              style={[styles.actionButton, { backgroundColor: '#1A1A1A' }]}
               onPress={() => Alert.alert(
                 'Contact User', 
                 'Contact user feature coming soon!\n\nThis will allow direct communication with the citizen who submitted this complaint.',
@@ -450,7 +450,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.actionButton, { backgroundColor: '#27ae60' }]}
+              style={[styles.actionButton, { backgroundColor: '#1A1A1A' }]}
               onPress={() => {
                 Alert.alert(
                   'Mark as Resolved',
@@ -467,7 +467,7 @@ const AdminComplaintDetails = ({ route, navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.actionButton, { backgroundColor: '#e74c3c' }]}
+              style={[styles.actionButton, { backgroundColor: '#1A1A1A' }]}
               onPress={() => {
                 Alert.alert(
                   'Reject Complaint',
@@ -576,9 +576,9 @@ const AdminComplaintDetails = ({ route, navigation }) => {
   );
 
   function getPriorityColor(score) {
-    if (score >= 8) return '#e74c3c';
-    if (score >= 6) return '#f39c12';
-    if (score >= 4) return '#3498db';
+    if (score >= 8) return '#1A1A1A';
+    if (score >= 6) return '#1A1A1A';
+    if (score >= 4) return '#1A1A1A';
     return '#95a5a6';
   }
 
@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButton: {
-    color: '#3498db',
+    color: '#1A1A1A',
     fontSize: 16,
     marginTop: 10,
   },
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#27ae60',
+    backgroundColor: '#1A1A1A',
     borderRadius: 4,
   },
   progressText: {
@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#3498db',
+    borderLeftColor: '#1A1A1A',
   },
   currentStageLabel: {
     fontSize: 12,
@@ -780,7 +780,7 @@ const styles = StyleSheet.create({
   updateStageButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 20,
@@ -798,7 +798,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addStageText: {
-    color: '#27ae60',
+    color: '#1A1A1A',
     fontSize: 14,
     fontWeight: '600',
     marginLeft: 5,
@@ -870,7 +870,7 @@ const styles = StyleSheet.create({
   },
   stageCost: {
     fontSize: 12,
-    color: '#e67e22',
+    color: '#1A1A1A',
     fontWeight: '600',
     marginBottom: 4,
   },
@@ -971,7 +971,7 @@ const styles = StyleSheet.create({
   },
   modalUpdateButton: {
     flex: 1,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingVertical: 12,
     borderRadius: 8,
     marginLeft: 10,

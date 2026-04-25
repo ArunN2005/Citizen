@@ -37,7 +37,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
       
       const data = await TransparencyService.getDashboardData();
       
-      console.log('✅ Transparency data received:', {
+      console.log('Transparency data received:', {
         totalComplaints: data.totalComplaints,
         resolutionRate: data.resolutionRate,
         categoriesCount: data.categoryStats?.length || 0
@@ -46,7 +46,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
       setStatsData(data);
       
     } catch (error) {
-      console.error('❌ Error fetching transparency data:', error);
+      console.error('Error fetching transparency data:', error);
       setError(error.message);
       
       // Show user-friendly error message
@@ -71,8 +71,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
   };
 
   const renderHeader = () => (
-    <LinearGradient
-      colors={['#3498db', '#2980b9']}
+    <View
       style={[styles.header, { paddingTop: insets.top + 10 }]}
     >
       <View style={styles.headerContent}>
@@ -80,12 +79,12 @@ const CitizenTransparencyScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color="white" />
+          <Ionicons name="arrow-back" size={24} color="#374151" />
         </TouchableOpacity>
         
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>Transparency Dashboard</Text>
-          <Text style={styles.headerSubtitle}>Real-time civic issue statistics</Text>
+          <Text style={styles.headerTitle}>Transparency</Text>
+          <Text style={styles.headerSubtitle}>Real-time civic statistics</Text>
         </View>
         
         <TouchableOpacity 
@@ -96,21 +95,21 @@ const CitizenTransparencyScreen = ({ navigation }) => {
           <Ionicons 
             name="refresh" 
             size={24} 
-            color="white" 
+            color="#374151" 
             style={{
               transform: [{ rotate: refreshing ? '180deg' : '0deg' }]
             }}
           />
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 
   const renderOverviewCards = () => (
     <View style={styles.overviewContainer}>
       <View style={styles.overviewCard}>
         <View style={styles.overviewIconContainer}>
-          <Ionicons name="clipboard" size={24} color="#3498db" />
+          <Ionicons name="clipboard" size={24} color="#1A1A1A" />
         </View>
         <Text style={styles.overviewValue}>{statsData.totalComplaints}</Text>
         <Text style={styles.overviewLabel}>Total Reports</Text>
@@ -118,7 +117,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
       
       <View style={styles.overviewCard}>
         <View style={[styles.overviewIconContainer, { backgroundColor: '#e3f5ff' }]}>
-          <Ionicons name="checkmark-circle" size={24} color="#27ae60" />
+          <Ionicons name="checkmark-circle" size={24} color="#1A1A1A" />
         </View>
         <Text style={styles.overviewValue}>{statsData.resolvedComplaints}</Text>
         <Text style={styles.overviewLabel}>Resolved</Text>
@@ -126,7 +125,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
       
       <View style={styles.overviewCard}>
         <View style={[styles.overviewIconContainer, { backgroundColor: '#fff5e3' }]}>
-          <Ionicons name="time" size={24} color="#f39c12" />
+          <Ionicons name="time" size={24} color="#1A1A1A" />
         </View>
         <Text style={styles.overviewValue}>{statsData.pendingComplaints}</Text>
         <Text style={styles.overviewLabel}>Pending</Text>
@@ -198,7 +197,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
       <Text style={styles.sectionTitle}>Community Impact</Text>
       <View style={styles.impactContainer}>
         <View style={styles.impactItem}>
-          <MaterialCommunityIcons name="account-group" size={28} color="#3498db" />
+          <MaterialCommunityIcons name="account-group" size={28} color="#1A1A1A" />
           <Text style={styles.impactValue}>
             {TransparencyService.formatPeopleImpacted(statsData.impactStats.peopleImpacted)}
           </Text>
@@ -206,13 +205,13 @@ const CitizenTransparencyScreen = ({ navigation }) => {
         </View>
         
         <View style={styles.impactItem}>
-          <MaterialCommunityIcons name="trending-up" size={28} color="#27ae60" />
+          <MaterialCommunityIcons name="trending-up" size={28} color="#1A1A1A" />
           <Text style={styles.impactValue}>{statsData.impactStats.highPriorityIssues}</Text>
           <Text style={styles.impactLabel}>High Priority</Text>
         </View>
         
         <View style={styles.impactItem}>
-          <Ionicons name="timer-outline" size={28} color="#f39c12" />
+          <Ionicons name="timer-outline" size={28} color="#1A1A1A" />
           <Text style={styles.impactValue}>
             {statsData.avgResolutionTime ? `${statsData.avgResolutionTime} days` : 'N/A'}
           </Text>
@@ -262,7 +261,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
                       styles.chartResolvedBar,
                       {
                         height: resolvedHeight,
-                        backgroundColor: index === statsData.monthlyData.length - 1 ? '#27ae60' : '#52d681'
+                        backgroundColor: index === statsData.monthlyData.length - 1 ? '#1A1A1A' : '#52d681'
                       }
                     ]}
                   />
@@ -281,7 +280,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
           <Text style={styles.legendText}>Total Reports</Text>
         </View>
         <View style={styles.legendItem}>
-          <View style={[styles.legendColor, { backgroundColor: '#27ae60' }]} />
+          <View style={[styles.legendColor, { backgroundColor: '#1A1A1A' }]} />
           <Text style={styles.legendText}>Resolved</Text>
         </View>
       </View>
@@ -294,7 +293,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
       
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3498db" />
+          <ActivityIndicator size="large" color="#1A1A1A" />
           <Text style={styles.loadingText}>
             {refreshing ? 'Refreshing transparency data...' : 'Loading transparency data...'}
           </Text>
@@ -308,7 +307,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              colors={['#3498db']}
+              colors={['#1A1A1A']}
               progressBackgroundColor="#ffffff"
             />
           }
@@ -325,7 +324,7 @@ const CitizenTransparencyScreen = ({ navigation }) => {
           
           {error && (
             <View style={styles.errorContainer}>
-              <MaterialCommunityIcons name="alert-circle" size={48} color="#e74c3c" />
+              <MaterialCommunityIcons name="alert-circle" size={48} color="#1A1A1A" />
               <Text style={styles.errorText}>Failed to load data</Text>
               <Text style={styles.errorSubtext}>{error}</Text>
               <TouchableOpacity style={styles.retryButton} onPress={fetchTransparencyData}>
@@ -344,13 +343,14 @@ const CitizenTransparencyScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
   header: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    paddingBottom: 16,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   headerContent: {
     flexDirection: 'row',
@@ -359,8 +359,8 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
   },
   headerTextContainer: {
     flex: 1,
@@ -368,18 +368,19 @@ const styles = StyleSheet.create({
   },
   refreshButton: {
     padding: 8,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
+    backgroundColor: '#F3F4F6',
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.2,
+    marginBottom: 2,
   },
   headerSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    color: '#9CA3AF',
   },
   scrollView: {
     flex: 1,
@@ -405,16 +406,13 @@ const styles = StyleSheet.create({
   },
   overviewCard: {
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    padding: 14,
     marginHorizontal: 4,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   overviewIconContainer: {
     width: 48,
@@ -436,21 +434,19 @@ const styles = StyleSheet.create({
     color: '#777',
   },
   sectionContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
     padding: 16,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 14,
+    letterSpacing: 0.3,
   },
   resolutionContainer: {
     flexDirection: 'row',
@@ -468,7 +464,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -509,7 +505,7 @@ const styles = StyleSheet.create({
   },
   categoryFill: {
     height: '100%',
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     borderRadius: 4,
   },
   categoryInfo: {
@@ -527,7 +523,7 @@ const styles = StyleSheet.create({
   categoryPercentage: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#3498db',
+    color: '#1A1A1A',
     width: 45,
     textAlign: 'right',
   },
@@ -549,7 +545,7 @@ const styles = StyleSheet.create({
   },
   chartBar: {
     width: 24,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
   },
@@ -646,7 +642,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#e74c3c',
+    color: '#1A1A1A',
     marginTop: 16,
     textAlign: 'center',
   },
@@ -658,7 +654,7 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     marginTop: 20,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

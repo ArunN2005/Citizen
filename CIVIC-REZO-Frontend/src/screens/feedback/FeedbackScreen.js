@@ -89,7 +89,7 @@ const FeedbackScreen = ({ route, navigation }) => {
           <Ionicons
             name={i <= rating ? 'star' : 'star-outline'}
             size={40}
-            color={i <= rating ? '#f39c12' : '#bdc3c7'}
+            color={i <= rating ? '#1A1A1A' : '#bdc3c7'}
           />
         </TouchableOpacity>
       );
@@ -111,7 +111,7 @@ const FeedbackScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={['#3498db', '#2980b9']}
+        colors={['#1A1A1A', '#1A1A1A']}
         style={styles.header}
       >
         <View style={styles.headerContent}>
@@ -128,7 +128,7 @@ const FeedbackScreen = ({ route, navigation }) => {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.successMessage}>
-          <Ionicons name="checkmark-circle" size={60} color="#27ae60" />
+          <Ionicons name="checkmark-circle" size={60} color="#1A1A1A" />
           <Text style={styles.successTitle}>Complaint Submitted!</Text>
           <Text style={styles.successSubtitle}>
             Thank you for reporting: {complaintTitle}
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   successTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#27ae60',
+    color: '#1A1A1A',
     marginTop: 15,
   },
   successSubtitle: {
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#e0e0e0',
   },
   submitButton: {
-    backgroundColor: '#27ae60',
+    backgroundColor: '#1A1A1A',
     borderRadius: 10,
     padding: 15,
     flexDirection: 'row',

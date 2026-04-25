@@ -1,59 +1,59 @@
-// Environmental Theme Configuration for CivicStack
-// Inspired by nature and sustainability
+// CIVIC-REZO Institutional Theme
+// Clean, monochrome, professional — inspired by architectural / civic design language
 
 export const EnvironmentalTheme = {
-  // Primary Colors - Earth Tones
+  // Primary Colors — Monochrome Blacks
   primary: {
-    main: '#2E7D32', // Forest Green
-    light: '#60AD5E', // Light Green
-    dark: '#1B5E20', // Dark Forest
-    surface: '#E8F5E9', // Very Light Green
+    main: '#1A1A1A',       // Near-black
+    light: '#333333',      // Dark gray
+    dark: '#000000',       // True black
+    surface: '#F5F5F5',    // Light warm gray
   },
 
-  // Secondary Colors - Sky & Water
+  // Secondary Colors — Neutral Grays
   secondary: {
-    main: '#0277BD', // Ocean Blue
-    light: '#58A5F0', // Sky Blue
-    dark: '#01579B', // Deep Ocean
-    surface: '#E3F2FD', // Light Sky
+    main: '#6B7280',       // Medium gray
+    light: '#9CA3AF',      // Light gray
+    dark: '#374151',       // Charcoal
+    surface: '#F9FAFB',    // Off-white
   },
 
-  // Accent Colors - Earth Elements
+  // Accent Colors — Minimal, purposeful (monochrome)
   accent: {
-    amber: '#FF8F00', // Sunset Orange
-    brown: '#5D4037', // Earth Brown
-    teal: '#00695C', // River Teal
-    lime: '#689F38', // Fresh Lime
+    red: '#1A1A1A',        // Replaced Alert / Critical
+    amber: '#1A1A1A',      // Replaced Warning
+    teal: '#1A1A1A',       // Replaced Success
+    blue: '#1A1A1A',       // Replaced Informational
   },
 
-  // Neutral Colors - Natural Stones
+  // Neutral Colors — Warm grays
   neutral: {
     white: '#FFFFFF',
-    light: '#F8FAF8', // Off-white with green tint
-    gray100: '#F1F8E9', // Very light green-gray
-    gray200: '#DCEDC8', // Light green-gray
-    gray300: '#C5E1A5', // Medium green-gray
-    gray500: '#8BC34A', // Medium green
-    gray700: '#558B2F', // Dark green
-    gray900: '#33691E', // Very dark green
-    black: '#1B5E20',
+    light: '#FAFAFA',
+    gray100: '#F3F4F6',
+    gray200: '#E5E7EB',
+    gray300: '#D1D5DB',
+    gray500: '#6B7280',
+    gray700: '#374151',
+    gray900: '#111827',
+    black: '#0A0A0A',
   },
 
-  // Status Colors - Natural Elements
+  // Status Colors (monochrome)
   status: {
-    success: '#4CAF50', // Leaf Green
-    warning: '#FF9800', // Autumn Orange
-    error: '#D32F2F', // Berry Red
-    info: '#0288D1', // Water Blue
+    success: '#1A1A1A',
+    warning: '#1A1A1A',
+    error: '#1A1A1A',
+    info: '#1A1A1A',
   },
 
-  // Gradients - Natural Transitions
+  // Gradients — Subtle, professional (monochrome)
   gradients: {
-    primary: ['#2E7D32', '#60AD5E'],
-    secondary: ['#0277BD', '#58A5F0'],
-    sunset: ['#FF8F00', '#FF5722'],
-    forest: ['#1B5E20', '#2E7D32', '#60AD5E'],
-    ocean: ['#01579B', '#0277BD', '#58A5F0'],
+    primary: ['#1A1A1A', '#333333'],
+    secondary: ['#374151', '#6B7280'],
+    dark: ['#000000', '#1A1A1A'],
+    forest: ['#1A1A1A', '#1A1A1A', '#1A1A1A'],
+    ocean: ['#1A1A1A', '#1A1A1A', '#1A1A1A'],
   },
 
   // Spacing System
@@ -66,48 +66,49 @@ export const EnvironmentalTheme = {
     xxl: 48,
   },
 
-  // Border Radius
+  // Border Radius — Sharp, architectural
   borderRadius: {
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
+    sm: 4,
+    md: 8,
+    lg: 12,
+    xl: 16,
     round: 50,
   },
 
-  // Typography
+  // Typography — Clean, professional
   typography: {
-    h1: { fontSize: 32, fontWeight: 'bold' },
-    h2: { fontSize: 28, fontWeight: 'bold' },
-    h3: { fontSize: 24, fontWeight: '600' },
-    h4: { fontSize: 20, fontWeight: '600' },
-    body1: { fontSize: 16, fontWeight: '400' },
-    body2: { fontSize: 14, fontWeight: '400' },
-    caption: { fontSize: 12, fontWeight: '400' },
+    h1: { fontSize: 32, fontWeight: '700', letterSpacing: -0.5 },
+    h2: { fontSize: 26, fontWeight: '700', letterSpacing: -0.3 },
+    h3: { fontSize: 22, fontWeight: '600', letterSpacing: -0.2 },
+    h4: { fontSize: 18, fontWeight: '600', letterSpacing: 0 },
+    body1: { fontSize: 16, fontWeight: '400', letterSpacing: 0.1 },
+    body2: { fontSize: 14, fontWeight: '400', letterSpacing: 0.1 },
+    caption: { fontSize: 12, fontWeight: '400', letterSpacing: 0.2 },
+    label: { fontSize: 11, fontWeight: '600', letterSpacing: 1.2, textTransform: 'uppercase' },
   },
 
-  // Shadows
+  // Shadows — Subtle, refined
   shadows: {
     small: {
-      shadowColor: '#1B5E20',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 3,
+      elevation: 2,
     },
     medium: {
-      shadowColor: '#1B5E20',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
       shadowRadius: 8,
-      elevation: 6,
+      elevation: 4,
     },
     large: {
-      shadowColor: '#1B5E20',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.2,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
       shadowRadius: 16,
-      elevation: 10,
+      elevation: 8,
     },
   },
 };

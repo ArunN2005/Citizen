@@ -1,217 +1,209 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
+  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const AdminAuthScreen = ({ navigation }) => {
+  const features = [
+    { icon: 'clipboard-outline', text: 'Manage all citizen complaints' },
+    { icon: 'flash-outline', text: 'Priority queue management' },
+    { icon: 'people-outline', text: 'User management system' },
+    { icon: 'analytics-outline', text: 'Analytics and reporting' },
+    { icon: 'map-outline', text: 'City-wide complaint heatmaps' },
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
+
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={20} color="#374151" />
+      </TouchableOpacity>
+
+      <View style={styles.header}>
+        <View style={styles.iconBox}>
+          <Ionicons name="shield-checkmark-outline" size={32} color="#1A1A1A" />
+        </View>
+        <Text style={styles.title}>Admin Portal</Text>
+        <Text style={styles.subtitle}>
+          Manage and oversee civic operations efficiently
+        </Text>
+      </View>
+
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          style={styles.primaryButton}
+          onPress={() => navigation.navigate('AdminLogin')}
+          activeOpacity={0.8}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Text style={styles.primaryButtonText}>ADMIN LOGIN</Text>
+          <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
         </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Text style={styles.icon}>👨‍💼</Text>
-          <Text style={styles.title}>Admin Portal</Text>
-          <Text style={styles.subtitle}>
-            Manage and oversee civic operations efficiently
-          </Text>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.loginButton]}
-            onPress={() => navigation.navigate('AdminLogin')}
-          >
-            <Text style={styles.buttonText}>Admin Login</Text>
-            <Text style={styles.buttonSubtext}>
-              Access your administrator account
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.signupButton]}
-            onPress={() => navigation.navigate('AdminSignup')}
-          >
-            <Text style={styles.buttonText}>Register as Admin</Text>
-            <Text style={styles.buttonSubtext}>
-              Create new administrator account
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.warning}>
-          <Text style={styles.warningIcon}>⚠️</Text>
-          <Text style={styles.warningText}>
-            Admin accounts require approval from system administrators
-          </Text>
-        </View>
-
-        <View style={styles.features}>
-          <Text style={styles.featuresTitle}>Admin Capabilities:</Text>
-          
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>📋</Text>
-            <Text style={styles.featureText}>Manage all citizen complaints</Text>
-          </View>
-
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>⚡</Text>
-            <Text style={styles.featureText}>Priority queue management</Text>
-          </View>
-
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>👥</Text>
-            <Text style={styles.featureText}>User management system</Text>
-          </View>
-
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>📊</Text>
-            <Text style={styles.featureText}>Analytics and reporting</Text>
-          </View>
-
-          <View style={styles.featureItem}>
-            <Text style={styles.featureIcon}>🗺️</Text>
-            <Text style={styles.featureText}>City-wide complaint heatmaps</Text>
-          </View>
-        </View>
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => navigation.navigate('AdminSignup')}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.secondaryButtonText}>REGISTER AS ADMIN</Text>
+          <Ionicons name="arrow-forward" size={18} color="#1A1A1A" />
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+
+      {/* Notice */}
+      <View style={styles.noticeCard}>
+        <Ionicons name="information-circle-outline" size={18} color="#1A1A1A" />
+        <Text style={styles.noticeText}>
+          Admin accounts require approval from system administrators
+        </Text>
+      </View>
+
+      <View style={styles.featuresCard}>
+        <Text style={styles.featuresTitle}>ADMIN CAPABILITIES</Text>
+        {features.map((item, index) => (
+          <View key={index} style={styles.featureItem}>
+            <Ionicons name={item.icon} size={18} color="#6B7280" />
+            <Text style={styles.featureText}>{item.text}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 50,
+    backgroundColor: '#FAFAFA',
+    paddingHorizontal: 24,
+    paddingTop: 56,
   },
   backButton: {
-    marginBottom: 20,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#1976D2',
-    fontWeight: '500',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 32,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 36,
   },
-  icon: {
-    fontSize: 60,
-    marginBottom: 15,
+  iconBox: {
+    width: 64,
+    height: 64,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1976D2',
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#111827',
     marginBottom: 8,
+    letterSpacing: -0.3,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: 14,
+    color: '#6B7280',
     textAlign: 'center',
     paddingHorizontal: 20,
+    lineHeight: 20,
   },
   buttonContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
+    gap: 12,
   },
-  button: {
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 15,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  loginButton: {
-    backgroundColor: '#1976D2',
-  },
-  signupButton: {
-    backgroundColor: '#1E88E5',
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 5,
-  },
-  buttonSubtext: {
-    fontSize: 14,
-    color: '#E3F2FD',
-    textAlign: 'center',
-  },
-  warning: {
-    backgroundColor: '#FFF3CD',
-    padding: 15,
+  primaryButton: {
+    backgroundColor: '#1A1A1A',
     borderRadius: 8,
-    marginBottom: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: '#FFA000',
+    justifyContent: 'center',
+    gap: 10,
   },
-  warningIcon: {
-    fontSize: 18,
-    marginRight: 10,
+  primaryButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1.2,
   },
-  warningText: {
-    fontSize: 14,
-    color: '#856404',
+  secondaryButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  secondaryButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    letterSpacing: 1.2,
+  },
+  noticeCard: {
+    backgroundColor: '#FFFBEB',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: 8,
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 20,
+  },
+  noticeText: {
+    fontSize: 13,
+    color: '#92400E',
     flex: 1,
+    lineHeight: 18,
   },
-  features: {
-    backgroundColor: '#fff',
+  featuresCard: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
     padding: 20,
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 3.84,
-    elevation: 3,
   },
   featuresTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 15,
-    textAlign: 'center',
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    letterSpacing: 1.5,
+    marginBottom: 16,
   },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-  },
-  featureIcon: {
-    fontSize: 20,
-    marginRight: 12,
-    width: 25,
+    paddingVertical: 10,
+    gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   featureText: {
-    fontSize: 16,
-    color: '#555',
+    fontSize: 14,
+    color: '#374151',
     flex: 1,
   },
 });

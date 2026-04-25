@@ -9,12 +9,13 @@ import {
   Alert,
   ActivityIndicator,
   StatusBar,
+  Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient, makeApiCall } from '../../../config/supabase';
-import EnvironmentalTheme from '../../theme/EnvironmentalTheme';
+
+const { width } = Dimensions.get('window');
 
 const CitizenLoginScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -23,6 +24,7 @@ const CitizenLoginScreen = ({ navigation }) => {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -68,132 +70,136 @@ const CitizenLoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={EnvironmentalTheme.primary.main} />
-      
-      {/* Environmental Header Gradient */}
-      <LinearGradient
-        colors={EnvironmentalTheme.gradients.forest}
-        style={styles.headerGradient}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <View style={styles.headerContent}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#ffffff" />
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-          
-          <View style={styles.header}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="leaf" size={48} color="#ffffff" />
-            </View>
-            <Text style={styles.title}>EcoReports</Text>
-            <Text style={styles.subtitle}>Citizen Portal - Join the green movement</Text>
-          </View>
-        </View>
-      </LinearGradient>
+      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <LinearGradient
-          colors={[EnvironmentalTheme.neutral.white, EnvironmentalTheme.primary.surface]}
-          style={styles.formCard}
+      {/* Left panel — brand identity */}
+      <View style={styles.brandPanel}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
         >
-          <View style={styles.formHeader}>
-            <Ionicons name="person-circle" size={32} color={EnvironmentalTheme.primary.main} />
-            <Text style={styles.formTitle}>Welcome Back</Text>
-            <Text style={styles.formSubtitle}>Sign in to continue your environmental journey</Text>
+          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+
+        <View style={styles.brandContent}>
+          <Text style={styles.brandName}>CIVIC{'\n'}REZO</Text>
+          <View style={styles.brandDivider} />
+          <View style={styles.accessBadge}>
+            <Text style={styles.accessTitle}>Secure Citizen Access</Text>
           </View>
+          <Text style={styles.accessDescription}>
+            Institutional portal for secure identity verification and civic engagement. Restricted access.
+          </Text>
+        </View>
+      </View>
 
-          <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <Ionicons name="mail" size={20} color={EnvironmentalTheme.primary.main} />
-              <TextInput
-                style={styles.input}
-                placeholder="Email Address"
-                value={formData.email}
-                onChangeText={(value) => handleInputChange('email', value)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor={EnvironmentalTheme.neutral.gray500}
-              />
-            </View>
+      {/* Right panel — form */}
+      <ScrollView
+        style={styles.formPanel}
+        contentContainerStyle={styles.formContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Tabs */}
+        <View style={styles.tabRow}>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'login' && styles.activeTab]}
+            onPress={() => setActiveTab('login')}
+          >
+            <Text style={[styles.tabText, activeTab === 'login' && styles.activeTabText]}>LOGIN</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, activeTab === 'register' && styles.activeTab]}
+            onPress={() => {
+              setActiveTab('register');
+              navigation.navigate('CitizenSignup');
+            }}
+          >
+            <Text style={[styles.tabText, activeTab === 'register' && styles.activeTabText]}>REGISTER</Text>
+          </TouchableOpacity>
+        </View>
 
-            <View style={styles.passwordContainer}>
-              <Ionicons name="lock-closed" size={20} color={EnvironmentalTheme.primary.main} />
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Password"
-                value={formData.password}
-                onChangeText={(value) => handleInputChange('password', value)}
-                secureTextEntry={!showPassword}
-                placeholderTextColor={EnvironmentalTheme.neutral.gray500}
-              />
-              <TouchableOpacity
-                style={styles.eyeButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <Ionicons 
-                  name={showPassword ? 'eye' : 'eye-off'} 
-                  size={20} 
-                  color={EnvironmentalTheme.neutral.gray500} 
-                />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
-              onPress={handleLogin}
-              disabled={loading}
-            >
-              <LinearGradient
-                colors={loading ? [EnvironmentalTheme.neutral.gray300, EnvironmentalTheme.neutral.gray300] : [EnvironmentalTheme.primary.main, EnvironmentalTheme.primary.light]}
-                style={styles.buttonGradient}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#ffffff" />
-                ) : (
-                  <>
-                    <Ionicons name="log-in" size={20} color="#ffffff" />
-                    <Text style={styles.buttonText}>Login</Text>
-                  </>
-                )}
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.linkButton}
-              onPress={() => navigation.navigate('CitizenSignup')}
-            >
-              <Text style={styles.linkText}>
-                Don't have an account? 
-              </Text>
-              <Text style={styles.linkTextBold}> Create one</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.linkButton}
-              onPress={() => Alert.alert('Forgot Password', 'Environmental password reset coming soon.')}
-            >
-              <Ionicons name="help-circle" size={16} color={EnvironmentalTheme.secondary.main} />
-              <Text style={styles.forgotText}> Forgot Password?</Text>
-            </TouchableOpacity>
+        {/* Form fields */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>CITIZEN ID / EMAIL</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your credentials"
+              value={formData.email}
+              onChangeText={(value) => handleInputChange('email', value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#9CA3AF"
+            />
+            <Ionicons name="finger-print-outline" size={20} color="#9CA3AF" />
           </View>
-        </LinearGradient>
+        </View>
 
-        <View style={styles.footer}>
-          <View style={styles.footerCard}>
-            <Ionicons name="business" size={20} color={EnvironmentalTheme.secondary.main} />
-            <Text style={styles.footerText}>Need admin access? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
-              <Text style={styles.footerLink}>Switch to Admin Portal</Text>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>ACCESS KEY</Text>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••••••"
+              value={formData.password}
+              onChangeText={(value) => handleInputChange('password', value)}
+              secureTextEntry={!showPassword}
+              placeholderTextColor="#9CA3AF"
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={20}
+                color="#9CA3AF"
+              />
             </TouchableOpacity>
           </View>
         </View>
-        
-        <View style={styles.bottomSpacer} />
+
+        {/* Options row */}
+        <View style={styles.optionsRow}>
+          <View style={styles.checkRow}>
+            <View style={styles.checkbox} />
+            <Text style={styles.optionText}>Maintain Session</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => Alert.alert('Password Reset', 'Contact your administrator for key recovery.')}
+          >
+            <Text style={styles.recoverText}>RECOVER KEY</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Submit button */}
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <View style={styles.submitContent}>
+              <Text style={styles.submitText}>AUTHENTICATE SESSION</Text>
+              <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+            </View>
+          )}
+        </TouchableOpacity>
+
+        {/* Security notice */}
+        <View style={styles.securityNotice}>
+          <Ionicons name="shield-checkmark-outline" size={14} color="#9CA3AF" />
+          <Text style={styles.securityText}>Protected by Civic Protocol 256-bit encryption</Text>
+        </View>
+
+        {/* Footer link */}
+        <View style={styles.footerRow}>
+          <Text style={styles.footerText}>Need admin access? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
+            <Text style={styles.footerLink}>Switch Portal</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -202,179 +208,202 @@ const CitizenLoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EnvironmentalTheme.neutral.light,
+    backgroundColor: '#FFFFFF',
   },
-  headerGradient: {
-    paddingTop: StatusBar.currentHeight || 50,
-    paddingBottom: EnvironmentalTheme.spacing.xl,
-    borderBottomLeftRadius: EnvironmentalTheme.borderRadius.xl,
-    borderBottomRightRadius: EnvironmentalTheme.borderRadius.xl,
-  },
-  headerContent: {
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
+  // Brand panel
+  brandPanel: {
+    backgroundColor: '#1A1A1A',
+    paddingTop: 56,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.lg,
-  },
-  backButtonText: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.white,
-    fontWeight: '500',
-    marginLeft: EnvironmentalTheme.spacing.xs,
-  },
-  header: {
-    alignItems: 'center',
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.1)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.md,
+    marginBottom: 24,
   },
-  title: {
-    ...EnvironmentalTheme.typography.h1,
-    color: EnvironmentalTheme.neutral.white,
-    marginBottom: EnvironmentalTheme.spacing.xs,
+  brandContent: {
+    paddingLeft: 4,
   },
-  subtitle: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.white,
-    textAlign: 'center',
-    opacity: 0.9,
+  brandName: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    lineHeight: 42,
+    letterSpacing: 1,
+    marginBottom: 16,
   },
-  content: {
+  brandDivider: {
+    width: 32,
+    height: 2,
+    backgroundColor: '#1A1A1A',
+    marginBottom: 20,
+  },
+  accessBadge: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+    borderRadius: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    alignSelf: 'flex-start',
+    marginBottom: 12,
+  },
+  accessTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  accessDescription: {
+    fontSize: 13,
+    fontWeight: '400',
+    color: 'rgba(255,255,255,0.6)',
+    lineHeight: 19,
+  },
+  // Form panel
+  formPanel: {
     flex: 1,
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
-    marginTop: -15,
+    backgroundColor: '#FFFFFF',
   },
-  formCard: {
-    borderRadius: EnvironmentalTheme.borderRadius.xl,
-    padding: EnvironmentalTheme.spacing.xl,
-    marginBottom: EnvironmentalTheme.spacing.lg,
-    ...EnvironmentalTheme.shadows.medium,
+  formContent: {
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    paddingBottom: 40,
   },
-  formHeader: {
-    alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.xl,
+  tabRow: {
+    flexDirection: 'row',
+    marginBottom: 32,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
-  formTitle: {
-    ...EnvironmentalTheme.typography.h3,
-    color: EnvironmentalTheme.neutral.black,
-    marginTop: EnvironmentalTheme.spacing.sm,
-    marginBottom: EnvironmentalTheme.spacing.xs,
+  tab: {
+    paddingBottom: 12,
+    marginRight: 28,
   },
-  formSubtitle: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.neutral.gray700,
-    textAlign: 'center',
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#1A1A1A',
   },
-  form: {
-    flex: 1,
+  tabText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#9CA3AF',
+    letterSpacing: 1.5,
+  },
+  activeTabText: {
+    color: '#1A1A1A',
+    fontWeight: '600',
+  },
+  fieldGroup: {
+    marginBottom: 20,
+  },
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#374151',
+    letterSpacing: 1.2,
+    marginBottom: 8,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: EnvironmentalTheme.neutral.white,
-    borderWidth: 2,
-    borderColor: EnvironmentalTheme.neutral.gray200,
-    borderRadius: EnvironmentalTheme.borderRadius.md,
-    paddingHorizontal: EnvironmentalTheme.spacing.md,
-    marginBottom: EnvironmentalTheme.spacing.md,
-    ...EnvironmentalTheme.shadows.small,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    height: 48,
+    backgroundColor: '#FAFAFA',
   },
   input: {
     flex: 1,
-    padding: EnvironmentalTheme.spacing.md,
-    ...EnvironmentalTheme.typography.body1,
-    marginLeft: EnvironmentalTheme.spacing.sm,
+    fontSize: 15,
+    color: '#111827',
+    letterSpacing: 0.2,
   },
-  passwordContainer: {
+  optionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 28,
+  },
+  checkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: EnvironmentalTheme.neutral.white,
-    borderWidth: 2,
-    borderColor: EnvironmentalTheme.neutral.gray200,
-    borderRadius: EnvironmentalTheme.borderRadius.md,
-    paddingHorizontal: EnvironmentalTheme.spacing.md,
-    marginBottom: EnvironmentalTheme.spacing.lg,
-    ...EnvironmentalTheme.shadows.small,
+    gap: 8,
   },
-  passwordInput: {
-    flex: 1,
-    padding: EnvironmentalTheme.spacing.md,
-    ...EnvironmentalTheme.typography.body1,
-    marginLeft: EnvironmentalTheme.spacing.sm,
+  checkbox: {
+    width: 16,
+    height: 16,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+    borderRadius: 3,
   },
-  eyeButton: {
-    padding: EnvironmentalTheme.spacing.sm,
+  optionText: {
+    fontSize: 13,
+    color: '#6B7280',
   },
-  button: {
-    borderRadius: EnvironmentalTheme.borderRadius.md,
-    marginBottom: EnvironmentalTheme.spacing.lg,
-    ...EnvironmentalTheme.shadows.medium,
-    overflow: 'hidden',
-  },
-  buttonGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: EnvironmentalTheme.spacing.lg,
-  },
-  buttonText: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.white,
-    fontWeight: 'bold',
-    marginLeft: EnvironmentalTheme.spacing.sm,
-  },
-  linkButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: EnvironmentalTheme.spacing.md,
-  },
-  linkText: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.gray700,
-  },
-  linkTextBold: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.primary.main,
+  recoverText: {
+    fontSize: 11,
     fontWeight: '600',
+    color: '#374151',
+    letterSpacing: 0.8,
   },
-  forgotText: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.secondary.main,
-    fontWeight: '500',
-  },
-  footer: {
+  submitButton: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 6,
+    height: 52,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.lg,
+    marginBottom: 24,
   },
-  footerCard: {
+  submitDisabled: {
+    backgroundColor: '#9CA3AF',
+  },
+  submitContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: EnvironmentalTheme.neutral.white,
-    padding: EnvironmentalTheme.spacing.lg,
-    borderRadius: EnvironmentalTheme.borderRadius.lg,
-    ...EnvironmentalTheme.shadows.small,
+    gap: 10,
+  },
+  submitText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1.5,
+  },
+  securityNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginBottom: 24,
+  },
+  securityText: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    letterSpacing: 0.3,
+  },
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
   },
   footerText: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.neutral.gray700,
-    marginLeft: EnvironmentalTheme.spacing.sm,
+    fontSize: 13,
+    color: '#6B7280',
   },
   footerLink: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.secondary.main,
+    fontSize: 13,
     fontWeight: '600',
-  },
-  bottomSpacer: {
-    height: EnvironmentalTheme.spacing.lg,
+    color: '#1A1A1A',
+    textDecorationLine: 'underline',
   },
 });
 

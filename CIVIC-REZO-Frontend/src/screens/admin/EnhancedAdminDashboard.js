@@ -102,7 +102,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <LinearGradient colors={['#1e3c72', '#2a5298']} style={styles.loadingGradient}>
+        <LinearGradient colors={['#1A1A1A', '#1A1A1A']} style={styles.loadingGradient}>
           <Ionicons name="analytics" size={50} color="#fff" />
           <Text style={styles.loadingText}>Loading Dashboard...</Text>
         </LinearGradient>
@@ -114,7 +114,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#1e3c72', '#2a5298']} style={styles.header}>
+      <LinearGradient colors={['#1A1A1A', '#1A1A1A']} style={styles.header}>
         <View style={styles.headerContent}>
           <View>
             <Text style={styles.greeting}>Welcome back,</Text>
@@ -134,28 +134,28 @@ const EnhancedAdminDashboard = ({ navigation }) => {
       >
         {/* Overview Stats */}
         <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>📊 Overview</Text>
+          <Text style={styles.sectionTitle}>Overview</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
-              <Ionicons name="document-text-outline" size={24} color="#e74c3c" />
+              <Ionicons name="document-text-outline" size={24} color="#1A1A1A" />
               <Text style={styles.statNumber}>{overview.totalComplaints || 0}</Text>
               <Text style={styles.statLabel}>Total Complaints</Text>
             </View>
             
             <View style={styles.statCard}>
-              <Ionicons name="hourglass-outline" size={24} color="#f39c12" />
+              <Ionicons name="hourglass-outline" size={24} color="#1A1A1A" />
               <Text style={styles.statNumber}>{overview.pendingComplaints || 0}</Text>
               <Text style={styles.statLabel}>Pending</Text>
             </View>
             
             <View style={styles.statCard}>
-              <Ionicons name="construct-outline" size={24} color="#3498db" />
+              <Ionicons name="construct-outline" size={24} color="#1A1A1A" />
               <Text style={styles.statNumber}>{overview.inProgressComplaints || 0}</Text>
               <Text style={styles.statLabel}>In Progress</Text>
             </View>
             
             <View style={styles.statCard}>
-              <Ionicons name="checkmark-circle-outline" size={24} color="#27ae60" />
+              <Ionicons name="checkmark-circle-outline" size={24} color="#1A1A1A" />
               <Text style={styles.statNumber}>{overview.resolvedComplaints || 0}</Text>
               <Text style={styles.statLabel}>Resolved</Text>
             </View>
@@ -179,10 +179,10 @@ const EnhancedAdminDashboard = ({ navigation }) => {
 
         {/* Quick Actions */}
         <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>⚡ Quick Actions</Text>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionGrid}>
             <TouchableOpacity style={styles.actionCard} onPress={navigateToPriorityQueue}>
-              <LinearGradient colors={['#ff6b6b', '#ee5a24']} style={styles.actionGradient}>
+              <LinearGradient colors={['#1A1A1A', '#1A1A1A']} style={styles.actionGradient}>
                 <Ionicons name="list-outline" size={28} color="#fff" />
                 <Text style={styles.actionTitle}>Priority Queue</Text>
                 <Text style={styles.actionSubtitle}>Manage complaints by priority</Text>
@@ -190,7 +190,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionCard} onPress={navigateToCitizenManagement}>
-              <LinearGradient colors={['#4834d4', '#686de0']} style={styles.actionGradient}>
+              <LinearGradient colors={['#1A1A1A', '#1A1A1A']} style={styles.actionGradient}>
                 <Ionicons name="people-outline" size={28} color="#fff" />
                 <Text style={styles.actionTitle}>Citizen Management</Text>
                 <Text style={styles.actionSubtitle}>Manage user accounts</Text>
@@ -201,7 +201,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
 
         {/* Top Priority Complaints */}
         <View style={styles.prioritySection}>
-          <Text style={styles.sectionTitle}>🔥 High Priority Complaints</Text>
+          <Text style={styles.sectionTitle}>High Priority Complaints</Text>
           {(dashboardData.topPriorityComplaints || []).length > 0 ? (
             (dashboardData.topPriorityComplaints || []).slice(0, 3).map((complaint, index) => (
               <TouchableOpacity
@@ -218,7 +218,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
                       {complaint.category?.replace(/_/g, ' ').toUpperCase() || 'Complaint'}
                     </Text>
                     <Text style={styles.priorityLocation} numberOfLines={1}>
-                      📍 Priority Score: {complaint.priority_score || 'N/A'}
+                      Priority Score: {complaint.priority_score || 'N/A'}
                     </Text>
                   </View>
                 </View>
@@ -241,18 +241,18 @@ const EnhancedAdminDashboard = ({ navigation }) => {
           
           <TouchableOpacity style={styles.viewAllButton} onPress={navigateToPriorityQueue}>
             <Text style={styles.viewAllText}>View All Complaints</Text>
-            <Ionicons name="arrow-forward" size={16} color="#3498db" />
+            <Ionicons name="arrow-forward" size={16} color="#1A1A1A" />
           </TouchableOpacity>
         </View>
 
         {/* Location Hotspots */}
         {(dashboardData.locationHotspots || []).length > 0 && (
           <View style={styles.hotspotsSection}>
-            <Text style={styles.sectionTitle}>🗺️ Complaint Hotspots</Text>
+            <Text style={styles.sectionTitle}>Complaint Hotspots</Text>
             {(dashboardData.locationHotspots || []).slice(0, 3).map((hotspot, index) => (
               <View key={index} style={styles.hotspotCard}>
                 <View style={styles.hotspotHeader}>
-                  <Ionicons name="location" size={20} color="#e74c3c" />
+                  <Ionicons name="location" size={20} color="#1A1A1A" />
                   <Text style={styles.hotspotLocation}>{hotspot.area_name}</Text>
                 </View>
                 <Text style={styles.hotspotCount}>
@@ -265,7 +265,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
 
         {/* Recent Activity */}
         <View style={styles.activitySection}>
-          <Text style={styles.sectionTitle}>📋 Recent Activity</Text>
+          <Text style={styles.sectionTitle}>Recent Activity</Text>
           {(dashboardData.recentActivity || []).length > 0 ? (
             (dashboardData.recentActivity || []).slice(0, 5).map((activity, index) => (
               <View key={activity.id || index} style={styles.activityItem}>
@@ -273,7 +273,7 @@ const EnhancedAdminDashboard = ({ navigation }) => {
                   <Ionicons 
                     name={getActivityIcon(activity.event_type)} 
                     size={16} 
-                    color="#3498db" 
+                    color="#1A1A1A" 
                   />
                 </View>
                 <View style={styles.activityContent}>
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   priorityBadge: {
-    backgroundColor: '#e74c3c',
+    backgroundColor: '#1A1A1A',
     borderRadius: 20,
     width: 40,
     height: 40,
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   statusBadge: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 4,
@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   viewAllText: {
-    color: '#3498db',
+    color: '#1A1A1A',
     fontSize: 14,
     fontWeight: '600',
     marginRight: 5,

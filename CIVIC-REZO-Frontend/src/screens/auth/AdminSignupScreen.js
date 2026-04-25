@@ -8,7 +8,9 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { apiClient, makeApiCall } from '../../../config/supabase';
 
 const AdminSignupScreen = ({ navigation }) => {
@@ -54,7 +56,6 @@ const AdminSignupScreen = ({ navigation }) => {
       return false;
     }
 
-    // Admin email validation (should end with gov domain or organization domain)
     if (!formData.email.includes('gov') && !formData.email.includes('civic')) {
       Alert.alert(
         'Warning', 
@@ -84,7 +85,7 @@ const AdminSignupScreen = ({ navigation }) => {
             try {
               const signupData = {
                 ...formData,
-                userType: 'admin', // Ensure this is always admin
+                userType: 'admin',
                 address: `Department: ${formData.department}, Employee ID: ${formData.employeeId}`,
               };
               delete signupData.confirmPassword;
@@ -99,7 +100,7 @@ const AdminSignupScreen = ({ navigation }) => {
               if (response.success) {
                 Alert.alert(
                   'Registration Submitted',
-                  'Your admin registration has been submitted for approval. You will be notified once your account is activated.',
+                  'Your admin registration has been submitted for approval.',
                   [
                     {
                       text: 'OK',
@@ -119,296 +120,275 @@ const AdminSignupScreen = ({ navigation }) => {
     );
   };
 
+  const fields = [
+    { key: 'fullName', label: 'FULL NAME', placeholder: 'Enter full name', icon: 'person-outline', required: true },
+    { key: 'email', label: 'OFFICIAL EMAIL', placeholder: 'Enter email', icon: 'mail-outline', keyboard: 'email-address', required: true },
+    { key: 'department', label: 'DEPARTMENT', placeholder: 'Enter department', icon: 'business-outline', required: true },
+    { key: 'employeeId', label: 'EMPLOYEE ID', placeholder: 'Enter employee ID', icon: 'card-outline', required: true },
+    { key: 'phoneNumber', label: 'PHONE NUMBER', placeholder: 'Enter phone', icon: 'call-outline', keyboard: 'phone-pad', required: true },
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Ionicons name="arrow-back" size={20} color="#374151" />
         </TouchableOpacity>
 
         <View style={styles.header}>
-          <Text style={styles.icon}>👨‍💼</Text>
           <Text style={styles.title}>Admin Registration</Text>
-          <Text style={styles.subtitle}>Request administrator access</Text>
+          <Text style={styles.subtitle}>Request administrator access to the platform</Text>
         </View>
 
-        <View style={styles.warningBox}>
-          <Text style={styles.warningIcon}>⚠️</Text>
-          <Text style={styles.warningText}>
-            Admin registrations require approval from system administrators. 
-            Please provide accurate information for verification.
+        {/* Warning */}
+        <View style={styles.noticeCard}>
+          <Ionicons name="information-circle-outline" size={18} color="#1A1A1A" />
+          <Text style={styles.noticeText}>
+            Admin registrations require approval. Please provide accurate information for verification.
           </Text>
         </View>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name *"
-            value={formData.fullName}
-            onChangeText={(value) => handleInputChange('fullName', value)}
-            placeholderTextColor="#999"
-          />
+        {/* Fields */}
+        {fields.map((field) => (
+          <View key={field.key} style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>
+              {field.label} {field.required && <Text style={styles.required}>*</Text>}
+            </Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name={field.icon} size={18} color="#9CA3AF" />
+              <TextInput
+                style={styles.input}
+                placeholder={field.placeholder}
+                value={formData[field.key]}
+                onChangeText={(value) => handleInputChange(field.key, value)}
+                keyboardType={field.keyboard || 'default'}
+                autoCapitalize={field.keyboard === 'email-address' ? 'none' : 'words'}
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+          </View>
+        ))}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Official Email Address *"
-            value={formData.email}
-            onChangeText={(value) => handleInputChange('email', value)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#999"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Department *"
-            value={formData.department}
-            onChangeText={(value) => handleInputChange('department', value)}
-            placeholderTextColor="#999"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Employee ID *"
-            value={formData.employeeId}
-            onChangeText={(value) => handleInputChange('employeeId', value)}
-            placeholderTextColor="#999"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number *"
-            value={formData.phoneNumber}
-            onChangeText={(value) => handleInputChange('phoneNumber', value)}
-            keyboardType="phone-pad"
-            placeholderTextColor="#999"
-          />
-
-          <View style={styles.passwordContainer}>
+        {/* Password */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>PASSWORD <Text style={styles.required}>*</Text></Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" />
             <TextInput
-              style={styles.passwordInput}
-              placeholder="Password (min 8 characters) *"
+              style={styles.input}
+              placeholder="Min 8 characters"
               value={formData.password}
               onChangeText={(value) => handleInputChange('password', value)}
               secureTextEntry={!showPassword}
-              placeholderTextColor="#999"
+              placeholderTextColor="#9CA3AF"
             />
-            <TouchableOpacity
-              style={styles.eyeButton}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons name={showPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#9CA3AF" />
             </TouchableOpacity>
           </View>
+        </View>
 
-          <View style={styles.passwordContainer}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>CONFIRM PASSWORD <Text style={styles.required}>*</Text></Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" />
             <TextInput
-              style={styles.passwordInput}
-              placeholder="Confirm Password *"
+              style={styles.input}
+              placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChangeText={(value) => handleInputChange('confirmPassword', value)}
               secureTextEntry={!showConfirmPassword}
-              placeholderTextColor="#999"
+              placeholderTextColor="#9CA3AF"
             />
-            <TouchableOpacity
-              style={styles.eyeButton}
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <Text style={styles.eyeIcon}>{showConfirmPassword ? '👁️' : '👁️‍🗨️'}</Text>
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Ionicons name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'} size={18} color="#9CA3AF" />
             </TouchableOpacity>
           </View>
+        </View>
 
-          <View style={styles.infoBox}>
-            <Text style={styles.infoTitle}>Required for Admin Access:</Text>
-            <Text style={styles.infoText}>• Valid government/organizational email</Text>
-            <Text style={styles.infoText}>• Official department information</Text>
-            <Text style={styles.infoText}>• Employee identification</Text>
-            <Text style={styles.infoText}>• Verification by system admin</Text>
-          </View>
+        {/* Requirements */}
+        <View style={styles.requirementsCard}>
+          <Text style={styles.requirementsTitle}>REQUIRED FOR ADMIN ACCESS</Text>
+          <Text style={styles.requirementItem}>Valid government/organizational email</Text>
+          <Text style={styles.requirementItem}>Official department information</Text>
+          <Text style={styles.requirementItem}>Employee identification</Text>
+          <Text style={styles.requirementItem}>Verification by system admin</Text>
+        </View>
 
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignup}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Submit Admin Registration</Text>
-            )}
-          </TouchableOpacity>
+        {/* Submit */}
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitDisabled]}
+          onPress={handleSignup}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <View style={styles.submitContent}>
+              <Text style={styles.submitText}>SUBMIT REGISTRATION</Text>
+              <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+            </View>
+          )}
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => navigation.navigate('AdminLogin')}
-          >
-            <Text style={styles.linkText}>
-              Already have admin access? Login here
-            </Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have admin access? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('AdminLogin')}>
+            <Text style={styles.footerLink}>Login here</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
-  content: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 50,
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingTop: 56,
+    paddingBottom: 40,
   },
   backButton: {
-    marginBottom: 20,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#1976D2',
-    fontWeight: '500',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 25,
-  },
-  icon: {
-    fontSize: 50,
-    marginBottom: 15,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1976D2',
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.3,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-  },
-  warningBox: {
-    backgroundColor: '#FFF3CD',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 25,
-    flexDirection: 'row',
-    borderLeftWidth: 4,
-    borderLeftColor: '#FFA000',
-  },
-  warningIcon: {
-    fontSize: 18,
-    marginRight: 10,
-  },
-  warningText: {
     fontSize: 14,
-    color: '#856404',
-    flex: 1,
+    color: '#6B7280',
     lineHeight: 20,
   },
-  form: {
-    marginBottom: 30,
-  },
-  input: {
-    backgroundColor: '#fff',
+  noticeCard: {
+    backgroundColor: '#FFFBEB',
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  passwordContainer: {
+    borderColor: '#FDE68A',
+    borderRadius: 8,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    gap: 10,
+    marginBottom: 24,
   },
-  passwordInput: {
+  noticeText: {
+    fontSize: 13,
+    color: '#92400E',
     flex: 1,
-    padding: 15,
-    fontSize: 16,
+    lineHeight: 18,
   },
-  eyeButton: {
-    padding: 15,
+  fieldGroup: {
+    marginBottom: 18,
   },
-  eyeIcon: {
-    fontSize: 20,
-  },
-  infoBox: {
-    backgroundColor: '#E3F2FD',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#1976D2',
-  },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#1976D2',
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#374151',
+    letterSpacing: 1.2,
     marginBottom: 8,
   },
-  infoText: {
-    fontSize: 13,
-    color: '#1976D2',
-    marginBottom: 3,
+  required: {
+    color: '#1A1A1A',
   },
-  button: {
-    backgroundColor: '#1976D2',
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    height: 48,
+    backgroundColor: '#FFFFFF',
+    gap: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 15,
+    color: '#111827',
+  },
+  requirementsCard: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
     padding: 16,
-    borderRadius: 12,
+    marginBottom: 24,
+  },
+  requirementsTitle: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#374151',
+    letterSpacing: 1.2,
+    marginBottom: 10,
+  },
+  requirementItem: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginBottom: 4,
+    paddingLeft: 8,
+  },
+  submitButton: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 6,
+    height: 52,
+    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
+  submitDisabled: {
+    backgroundColor: '#9CA3AF',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  linkButton: {
+  submitContent: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    gap: 10,
   },
-  linkText: {
-    color: '#1976D2',
-    fontSize: 16,
-    fontWeight: '500',
+  submitText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1.5,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  footerText: {
+    fontSize: 13,
+    color: '#6B7280',
+  },
+  footerLink: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    textDecorationLine: 'underline',
   },
 });
 

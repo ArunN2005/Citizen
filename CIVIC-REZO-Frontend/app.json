@@ -70,7 +70,11 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "config": {
+        "googleMapsApiKey": "AIzaSyDB257FqtbNh6mEnV2ZsFfXTbsQmZ7kcjY"
+      }
     },
     "extra": {
       "eas": {

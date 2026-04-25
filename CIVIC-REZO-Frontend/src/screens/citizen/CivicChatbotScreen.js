@@ -32,7 +32,7 @@ const CivicChatbotScreen = ({ navigation }) => {
   useEffect(() => {
     const welcomeMessage = {
       id: Date.now().toString(),
-      text: "👋 Hello! I'm your CivicStack Assistant. I can help you with:\n\n• How to submit complaints\n• Understanding civic issues\n• App features and navigation\n• Troubleshooting problems\n• Learning about voting and priorities\n\nWhat would you like to know?",
+      text: "Hello! I'm your CivicStack Assistant. I can help you with:\n\n• How to submit complaints\n• Understanding civic issues\n• App features and navigation\n• Troubleshooting problems\n• Learning about voting and priorities\n\nWhat would you like to know?",
       isBot: true,
       timestamp: new Date(),
       type: 'welcome'
@@ -109,7 +109,7 @@ const CivicChatbotScreen = ({ navigation }) => {
       // Fallback response with helpful information
       const fallbackMessage = {
         id: (Date.now() + 1).toString(),
-        text: "I'm sorry, I'm having trouble connecting right now. Here are some quick tips:\n\n📱 To submit a complaint: Use the 'Submit Complaint' button on the main screen\n🗺️ To view issues: Check the 'Complaint Map' or 'Feed' tabs\n📊 To see your reports: Go to 'Personal Reports'\n🔍 For urgent issues: Select 'Fire Hazard' or 'Electrical Danger' categories\n\nTry asking me again in a moment!",
+        text: "I'm sorry, I'm having trouble connecting right now. Here are some quick tips:\n\n• To submit a complaint: Use the 'Submit Complaint' button on the main screen\n• To view issues: Check the 'Complaint Map' or 'Feed' tabs\n• To see your reports: Go to 'Personal Reports'\n• For urgent issues: Select 'Fire Hazard' or 'Electrical Danger' categories\n\nTry asking me again in a moment!",
         isBot: true,
         timestamp: new Date(),
         type: 'fallback'
@@ -302,7 +302,7 @@ const CivicChatbotScreen = ({ navigation }) => {
       {/* Quick Suggestions (shown when no messages) */}
       {messages.length <= 1 && (
         <View style={styles.suggestionsContainer}>
-          <Text style={styles.suggestionsTitle}>💡 Quick Questions</Text>
+          <Text style={styles.suggestionsTitle}>Quick Questions</Text>
           <View style={styles.suggestionsGrid}>
             {quickSuggestions.map((suggestion, index) => (
               <TouchableOpacity
@@ -310,7 +310,7 @@ const CivicChatbotScreen = ({ navigation }) => {
                 style={styles.suggestionButton}
                 onPress={() => handleQuickSuggestion(suggestion)}
               >
-                <Ionicons name={suggestion.icon} size={20} color="#3498db" />
+                <Ionicons name={suggestion.icon} size={20} color="#1A1A1A" />
                 <Text style={styles.suggestionText}>{suggestion.text}</Text>
               </TouchableOpacity>
             ))}
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#27ae60',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 8,
@@ -453,12 +453,12 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
   },
   userMessageBubble: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     borderBottomRightRadius: 4,
   },
   welcomeMessageBubble: {
     backgroundColor: '#e8f5e8',
-    borderColor: '#27ae60',
+    borderColor: '#1A1A1A',
     borderWidth: 1,
   },
   fallbackMessageBubble: {
@@ -507,7 +507,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     marginHorizontal: 2,
     opacity: 0.4,
   },
@@ -525,11 +525,11 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginBottom: 4,
     borderWidth: 1,
-    borderColor: '#3498db',
+    borderColor: '#1A1A1A',
   },
   quickActionText: {
     fontSize: 12,
-    color: '#3498db',
+    color: '#1A1A1A',
     fontWeight: '500',
   },
   suggestionsContainer: {
@@ -604,7 +604,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   sendButtonActive: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
   },
   sendButtonInactive: {
     backgroundColor: '#e9ecef',

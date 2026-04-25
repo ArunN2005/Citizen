@@ -9,10 +9,8 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import EnvironmentalTheme from '../../theme/EnvironmentalTheme';
 import FloatingChatbotButton from '../../components/FloatingChatbotButton';
 
 const { width } = Dimensions.get('window');
@@ -53,293 +51,176 @@ const CitizenDashboard = ({ navigation }) => {
     );
   };
 
+  const actionItems = [
+    {
+      icon: 'add-circle-outline',
+      title: 'New Report',
+      subtitle: 'Submit civic concern',
+      onPress: () => navigation.navigate('SubmitComplaint'),
+    },
+    {
+      icon: 'documents-outline',
+      title: 'My Reports',
+      subtitle: 'Track progress',
+      onPress: () => navigation.reset({ index: 0, routes: [{ name: 'InstagramFeed' }] }),
+    },
+    {
+      icon: 'map-outline',
+      title: 'Complaint Map',
+      subtitle: 'View area status',
+      onPress: () => navigation.navigate('ComplaintMap'),
+    },
+    {
+      icon: 'bar-chart-outline',
+      title: 'Transparency',
+      subtitle: 'Impact statistics',
+      onPress: () => navigation.navigate('CitizenTransparency'),
+    },
+    {
+      icon: 'chatbubbles-outline',
+      title: 'AI Assistant',
+      subtitle: 'Get instant help',
+      onPress: () => navigation.navigate('CivicChatbot'),
+    },
+    {
+      icon: 'mic-outline',
+      title: 'Voice Report',
+      subtitle: 'Speak your concern',
+      onPress: () => navigation.navigate('SubmitComplaint', { useVoice: true }),
+    },
+  ];
+
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={EnvironmentalTheme.primary.main} />
-      
-      {/* Environmental Header with Gradient */}
-      <LinearGradient
-        colors={EnvironmentalTheme.gradients.forest}
-        style={styles.header}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.brandMark}>CIVIC-REZO</Text>
+          <Text style={styles.brandSub}>Institutional Portal</Text>
+        </View>
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.headerIcon}>
+            <Ionicons name="notifications-outline" size={22} color="#374151" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.avatarButton}
+            onPress={handleLogout}
+          >
+            <Text style={styles.avatarText}>
+              {userData?.fullName?.charAt(0)?.toUpperCase() || 'C'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentInner}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.headerTop}>
-            <View style={styles.titleContainer}>
-              <View style={styles.titleRow}>
-                <Ionicons name="leaf" size={28} color="#ffffff" />
-                <Text style={styles.title}>EcoReports</Text>
-              </View>
-              <Text style={styles.welcomeText}>
-                Making our city greener, {userData?.fullName || 'Citizen'}!
-              </Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.profileIcon}
-              onPress={() => Alert.alert('Profile', 'Environmental profile settings')}
-            >
-              <Ionicons name="person-circle" size={40} color="#ffffff" />
-            </TouchableOpacity>
+        {/* Welcome section */}
+        <View style={styles.welcomeSection}>
+          <Text style={styles.welcomeTitle}>
+            Dashboard
+          </Text>
+          <Text style={styles.welcomeSub}>
+            Welcome back, {userData?.fullName || 'Citizen'}
+          </Text>
+        </View>
+
+        {/* Stats row */}
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>PENDING</Text>
           </View>
-          
-          {/* Environmental Stats */}
-          <View style={styles.quickStats}>
-            <View style={styles.statItem}>
-              <View style={styles.statIconContainer}>
-                <Ionicons name="time" size={20} color={EnvironmentalTheme.accent.amber} />
+          <View style={styles.statDivider} />
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>RESOLVED</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>IMPACT</Text>
+          </View>
+        </View>
+
+        {/* Actions grid */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionSub}>Report and track civic issues</Text>
+        </View>
+
+        <View style={styles.actionsGrid}>
+          {actionItems.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.actionCard}
+              onPress={item.onPress}
+              activeOpacity={0.7}
+            >
+              <View style={styles.actionIconBox}>
+                <Ionicons name={item.icon} size={24} color="#1A1A1A" />
               </View>
-              <Text style={styles.statNumber}>0</Text>
-              <Text style={styles.statLabel}>Pending</Text>
+              <Text style={styles.actionTitle}>{item.title}</Text>
+              <Text style={styles.actionSub}>{item.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Profile card */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Profile</Text>
+        </View>
+
+        <View style={styles.profileCard}>
+          <View style={styles.profileRow}>
+            <View style={styles.profileLabelRow}>
+              <Ionicons name="mail-outline" size={18} color="#6B7280" />
+              <Text style={styles.profileLabel}>Email</Text>
             </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <View style={styles.statIconContainer}>
-                <Ionicons name="checkmark-circle" size={20} color={EnvironmentalTheme.status.success} />
-              </View>
-              <Text style={styles.statNumber}>0</Text>
-              <Text style={styles.statLabel}>Resolved</Text>
+            <Text style={styles.profileValue}>{userData?.email || '—'}</Text>
+          </View>
+          <View style={styles.profileDivider} />
+          <View style={styles.profileRow}>
+            <View style={styles.profileLabelRow}>
+              <Ionicons name="call-outline" size={18} color="#6B7280" />
+              <Text style={styles.profileLabel}>Phone</Text>
             </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <View style={styles.statIconContainer}>
-                <Ionicons name="earth" size={20} color={EnvironmentalTheme.secondary.light} />
-              </View>
-              <Text style={styles.statNumber}>0</Text>
-              <Text style={styles.statLabel}>Impact</Text>
+            <Text style={styles.profileValue}>{userData?.phoneNumber || '—'}</Text>
+          </View>
+          <View style={styles.profileDivider} />
+          <View style={styles.profileRow}>
+            <View style={styles.profileLabelRow}>
+              <Ionicons name="shield-checkmark-outline" size={18} color="#6B7280" />
+              <Text style={styles.profileLabel}>Status</Text>
+            </View>
+            <View style={styles.statusBadge}>
+              <View style={styles.statusDot} />
+              <Text style={styles.statusText}>Active Citizen</Text>
             </View>
           </View>
         </View>
-      </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Environmental Actions Card */}
-        <LinearGradient
-          colors={[EnvironmentalTheme.neutral.white, EnvironmentalTheme.primary.surface]}
-          style={styles.card}
-        >
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Ionicons name="flash" size={24} color={EnvironmentalTheme.primary.main} />
-              <Text style={styles.cardTitle}>Eco Actions</Text>
-            </View>
-            <Text style={styles.cardSubtitle}>Report environmental issues</Text>
-          </View>
-          
-          <View style={styles.actionGrid}>
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.primaryAction]}
-              onPress={() => navigation.navigate('SubmitComplaint')}
-            >
-              <LinearGradient
-                colors={[EnvironmentalTheme.primary.main, EnvironmentalTheme.primary.light]}
-                style={styles.actionGradient}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Ionicons name="add-circle" size={28} color="#ffffff" />
-                </View>
-                <Text style={styles.actionButtonText}>New Report</Text>
-                <Text style={styles.actionSubtext}>Submit environmental concern</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.secondaryAction]}
-              onPress={() => {
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'InstagramFeed' }]
-                });
-              }}
-            >
-              <LinearGradient
-                colors={[EnvironmentalTheme.secondary.main, EnvironmentalTheme.secondary.light]}
-                style={styles.actionGradient}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Ionicons name="documents" size={28} color="#ffffff" />
-                </View>
-                <Text style={styles.actionButtonText}>My Reports</Text>
-                <Text style={styles.actionSubtext}>Track progress</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.tertiaryAction]}
-              onPress={() => navigation.navigate('ComplaintMap')}
-            >
-              <LinearGradient
-                colors={[EnvironmentalTheme.accent.teal, EnvironmentalTheme.secondary.light]}
-                style={styles.actionGradient}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Ionicons name="map" size={28} color="#ffffff" />
-                </View>
-                <Text style={styles.actionButtonText}>Complaint Map</Text>
-                <Text style={styles.actionSubtext}>View area status</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.quaternaryAction]}
-              onPress={() => navigation.navigate('CitizenTransparency')}
-            >
-              <LinearGradient
-                colors={[EnvironmentalTheme.accent.lime, EnvironmentalTheme.primary.light]}
-                style={styles.actionGradient}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Ionicons name="bar-chart" size={28} color="#ffffff" />
-                </View>
-                <Text style={styles.actionButtonText}>Transparency</Text>
-                <Text style={styles.actionSubtext}>Impact stats</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.chatbotAction]}
-              onPress={() => navigation.navigate('CivicChatbot')}
-            >
-              <LinearGradient
-                colors={['#6366f1', '#8b5cf6']}
-                style={styles.actionGradient}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Ionicons name="chatbubbles" size={28} color="#ffffff" />
-                </View>
-                <Text style={styles.actionButtonText}>AI Assistant</Text>
-                <Text style={styles.actionSubtext}>Get instant help</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              style={[styles.actionButton, styles.voiceAction]}
-              onPress={() => navigation.navigate('SubmitComplaint', { useVoice: true })}
-            >
-              <LinearGradient
-                colors={['#f59e0b', '#d97706']}
-                style={styles.actionGradient}
-              >
-                <View style={styles.actionIconContainer}>
-                  <Ionicons name="mic" size={28} color="#ffffff" />
-                </View>
-                <Text style={styles.actionButtonText}>Voice Report</Text>
-                <Text style={styles.actionSubtext}>Speak your concern</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
-
-        {/* Environmental Impact Card */}
-        <LinearGradient
-          colors={[EnvironmentalTheme.neutral.white, EnvironmentalTheme.secondary.surface]}
-          style={styles.card}
-        >
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Ionicons name="trending-up" size={24} color={EnvironmentalTheme.secondary.main} />
-              <Text style={styles.cardTitle}>Environmental Impact</Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.viewAllText}>View Details</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIconContainer}>
-              <Ionicons name="leaf-outline" size={48} color={EnvironmentalTheme.primary.main} />
-            </View>
-            <Text style={styles.emptyStateTitle}>Start Your Green Journey</Text>
-            <Text style={styles.emptyStateText}>
-              Your environmental impact will be tracked here as you submit reports
-            </Text>
-          </View>
-        </LinearGradient>
-
-        {/* Account Card with Environmental Theme */}
-        <LinearGradient
-          colors={[EnvironmentalTheme.neutral.white, EnvironmentalTheme.neutral.gray100]}
-          style={styles.card}
-        >
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <Ionicons name="person" size={24} color={EnvironmentalTheme.accent.brown} />
-              <Text style={styles.cardTitle}>Eco Profile</Text>
-            </View>
-          </View>
-          <View style={styles.infoContainer}>
-            <View style={styles.infoRow}>
-              <View style={styles.infoLabelContainer}>
-                <Ionicons name="mail" size={20} color={EnvironmentalTheme.primary.main} />
-                <Text style={styles.infoLabel}>Email</Text>
-              </View>
-              <Text style={styles.infoValue}>{userData?.email}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <View style={styles.infoLabelContainer}>
-                <Ionicons name="call" size={20} color={EnvironmentalTheme.secondary.main} />
-                <Text style={styles.infoLabel}>Phone</Text>
-              </View>
-              <Text style={styles.infoValue}>{userData?.phoneNumber}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <View style={styles.infoLabelContainer}>
-                <Ionicons name="shield-checkmark" size={20} color={EnvironmentalTheme.status.success} />
-                <Text style={styles.infoLabel}>Status</Text>
-              </View>
-              <View style={styles.statusBadge}>
-                <Ionicons name="leaf" size={16} color={EnvironmentalTheme.primary.main} />
-                <Text style={styles.statusText}>Eco Citizen</Text>
-              </View>
-            </View>
-          </View>
-        </LinearGradient>
-
-        {/* Environmental Logout Button */}
+        {/* Logout */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <LinearGradient
-            colors={[EnvironmentalTheme.neutral.white, EnvironmentalTheme.neutral.gray100]}
-            style={styles.logoutGradient}
-          >
-            <Ionicons name="log-out" size={24} color={EnvironmentalTheme.status.error} />
-            <Text style={styles.logoutButtonText}>Sign Out</Text>
-          </LinearGradient>
+          <Ionicons name="log-out-outline" size={18} color="#1A1A1A" />
+          <Text style={styles.logoutText}>Sign Out</Text>
         </TouchableOpacity>
-        
-        <View style={styles.bottomSpacer} />
+
+        <View style={{ height: 32 }} />
       </ScrollView>
-      
-      {/* ELEGANT BLUE CHATBOT BUTTON */}
+
+      {/* Floating chatbot button */}
       <TouchableOpacity
-        style={{
-          position: 'absolute',
-          bottom: 100,
-          right: 20,
-          width: 60,
-          height: 60,
-          borderRadius: 30,
-          backgroundColor: '#3498db',
-          justifyContent: 'center',
-          alignItems: 'center',
-          elevation: 8,
-          shadowColor: '#3498db',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          borderWidth: 3,
-          borderColor: '#FFFFFF',
-          zIndex: 1000,
-        }}
-        onPress={() => {
-          console.log('🤖 Blue chatbot button pressed from dashboard!');
-          navigation.navigate('CivicChatbot');
-        }}
+        style={styles.chatFab}
+        onPress={() => navigation.navigate('CivicChatbot')}
         activeOpacity={0.8}
       >
-        <MaterialCommunityIcons 
-          name="robot-happy" 
-          size={28} 
-          color="#FFFFFF" 
-        />
+        <Ionicons name="chatbubble-ellipses" size={24} color="#FFFFFF" />
       </TouchableOpacity>
     </View>
   );
@@ -348,258 +229,245 @@ const CitizenDashboard = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: EnvironmentalTheme.neutral.light,
+    backgroundColor: '#FAFAFA',
   },
   header: {
-    paddingTop: StatusBar.currentHeight || 50,
-    paddingBottom: EnvironmentalTheme.spacing.xl,
-    borderBottomLeftRadius: EnvironmentalTheme.borderRadius.xl,
-    borderBottomRightRadius: EnvironmentalTheme.borderRadius.xl,
-    ...EnvironmentalTheme.shadows.large,
-  },
-  headerContent: {
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
-  },
-  headerTop: {
+    backgroundColor: '#FFFFFF',
+    paddingTop: 52,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: EnvironmentalTheme.spacing.lg,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
-  titleContainer: {
-    flex: 1,
+  headerLeft: {},
+  brandMark: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    letterSpacing: 1,
   },
-  titleRow: {
+  brandSub: {
+    fontSize: 11,
+    color: '#9CA3AF',
+    marginTop: 2,
+    letterSpacing: 0.3,
+  },
+  headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.xs,
+    gap: 12,
   },
-  title: {
-    ...EnvironmentalTheme.typography.h2,
-    color: EnvironmentalTheme.neutral.white,
-    marginLeft: EnvironmentalTheme.spacing.sm,
-  },
-  welcomeText: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.white,
-    opacity: 0.9,
-  },
-  profileIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: EnvironmentalTheme.borderRadius.round,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  headerIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  quickStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  avatarButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: EnvironmentalTheme.borderRadius.lg,
-    paddingVertical: EnvironmentalTheme.spacing.md,
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
   },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statIconContainer: {
-    marginBottom: EnvironmentalTheme.spacing.xs,
-  },
-  statNumber: {
-    ...EnvironmentalTheme.typography.h3,
-    color: EnvironmentalTheme.neutral.white,
-    marginBottom: 2,
-  },
-  statLabel: {
-    ...EnvironmentalTheme.typography.caption,
-    color: EnvironmentalTheme.neutral.white,
-    opacity: 0.8,
-  },
-  statDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    marginHorizontal: EnvironmentalTheme.spacing.md,
+  avatarText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   content: {
     flex: 1,
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
-    marginTop: -15,
   },
-  card: {
-    borderRadius: EnvironmentalTheme.borderRadius.xl,
-    marginBottom: EnvironmentalTheme.spacing.lg,
-    ...EnvironmentalTheme.shadows.medium,
-    overflow: 'hidden',
+  contentInner: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
   },
-  cardHeader: {
-    padding: EnvironmentalTheme.spacing.lg,
-    paddingBottom: EnvironmentalTheme.spacing.sm,
+  welcomeSection: {
+    marginBottom: 24,
+  },
+  welcomeTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.3,
+    marginBottom: 4,
+  },
+  welcomeSub: {
+    fontSize: 15,
+    color: '#6B7280',
+  },
+  statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    paddingVertical: 20,
+    marginBottom: 32,
     alignItems: 'center',
   },
-  cardTitleRow: {
-    flexDirection: 'row',
+  statCard: {
+    flex: 1,
     alignItems: 'center',
   },
-  cardTitle: {
-    ...EnvironmentalTheme.typography.h4,
-    color: EnvironmentalTheme.neutral.black,
-    marginLeft: EnvironmentalTheme.spacing.sm,
+  statNumber: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 4,
   },
-  cardSubtitle: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.neutral.gray700,
+  statLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#9CA3AF',
+    letterSpacing: 1.5,
+  },
+  statDivider: {
+    width: 1,
+    height: 32,
+    backgroundColor: '#E5E7EB',
+  },
+  sectionHeader: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.2,
+  },
+  sectionSub: {
+    fontSize: 13,
+    color: '#9CA3AF',
     marginTop: 2,
   },
-  viewAllText: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.primary.main,
-    fontWeight: '600',
-  },
-  actionGrid: {
+  actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: EnvironmentalTheme.spacing.sm,
-    paddingBottom: EnvironmentalTheme.spacing.sm,
+    gap: 12,
+    marginBottom: 32,
   },
-  actionButton: {
-    width: (width - 80) / 2,
-    margin: EnvironmentalTheme.spacing.sm,
-    borderRadius: EnvironmentalTheme.borderRadius.lg,
-    minHeight: 140,
-    overflow: 'hidden',
-    ...EnvironmentalTheme.shadows.small,
+  actionCard: {
+    width: (width - 52) / 2,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    padding: 18,
   },
-  actionGradient: {
-    flex: 1,
-    padding: EnvironmentalTheme.spacing.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  actionIconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  actionIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.md,
+    marginBottom: 14,
   },
-  actionButtonText: {
-    ...EnvironmentalTheme.typography.body1,
-    fontWeight: 'bold',
-    color: EnvironmentalTheme.neutral.white,
-    textAlign: 'center',
-    marginBottom: EnvironmentalTheme.spacing.xs,
+  actionTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 3,
   },
-  actionSubtext: {
-    ...EnvironmentalTheme.typography.caption,
-    color: 'rgba(255,255,255,0.8)',
-    textAlign: 'center',
+  actionSub: {
+    fontSize: 12,
+    color: '#9CA3AF',
   },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: EnvironmentalTheme.spacing.xl,
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
+  profileCard: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    padding: 18,
+    marginBottom: 20,
   },
-  emptyIconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: EnvironmentalTheme.primary.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: EnvironmentalTheme.spacing.md,
-  },
-  emptyStateTitle: {
-    ...EnvironmentalTheme.typography.h4,
-    color: EnvironmentalTheme.neutral.black,
-    marginBottom: EnvironmentalTheme.spacing.xs,
-  },
-  emptyStateText: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.neutral.gray700,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  infoContainer: {
-    paddingHorizontal: EnvironmentalTheme.spacing.lg,
-    paddingBottom: EnvironmentalTheme.spacing.lg,
-  },
-  infoRow: {
+  profileRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: EnvironmentalTheme.spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: EnvironmentalTheme.neutral.gray200,
+    paddingVertical: 12,
   },
-  infoLabelContainer: {
+  profileLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  infoLabel: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.gray700,
+  profileLabel: {
+    fontSize: 14,
+    color: '#6B7280',
     fontWeight: '500',
-    marginLeft: EnvironmentalTheme.spacing.sm,
   },
-  infoValue: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.neutral.black,
+  profileValue: {
+    fontSize: 14,
+    color: '#111827',
     fontWeight: '400',
-    flex: 1,
+    maxWidth: '50%',
     textAlign: 'right',
   },
+  profileDivider: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+  },
   statusBadge: {
-    backgroundColor: EnvironmentalTheme.primary.surface,
-    paddingHorizontal: EnvironmentalTheme.spacing.md,
-    paddingVertical: EnvironmentalTheme.spacing.xs,
-    borderRadius: EnvironmentalTheme.borderRadius.md,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    gap: 6,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#1A1A1A',
   },
   statusText: {
-    ...EnvironmentalTheme.typography.body2,
-    color: EnvironmentalTheme.primary.main,
-    fontWeight: '600',
-    marginLeft: EnvironmentalTheme.spacing.xs,
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#1A1A1A',
   },
   logoutButton: {
-    marginBottom: EnvironmentalTheme.spacing.sm,
-    borderRadius: EnvironmentalTheme.borderRadius.lg,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: EnvironmentalTheme.status.error,
-    ...EnvironmentalTheme.shadows.small,
-  },
-  logoutGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: EnvironmentalTheme.spacing.lg,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#FEE2E2',
+    borderRadius: 10,
+    paddingVertical: 14,
+    gap: 8,
+    marginBottom: 8,
   },
-  logoutButtonText: {
-    ...EnvironmentalTheme.typography.body1,
-    color: EnvironmentalTheme.status.error,
-    fontWeight: 'bold',
-    marginLeft: EnvironmentalTheme.spacing.sm,
+  logoutText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1A1A1A',
   },
-  chatbotAction: {
-    // Chatbot button specific styles
-  },
-  voiceAction: {
-    // Voice input button specific styles
-  },
-  bottomSpacer: {
-    height: EnvironmentalTheme.spacing.lg,
+  chatFab: {
+    position: 'absolute',
+    bottom: 100,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#1A1A1A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    zIndex: 1000,
   },
 });
 

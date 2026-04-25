@@ -49,11 +49,11 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
   // Get user's current location
   const getUserLocation = async () => {
     try {
-      console.log('📍 Admin requesting location permissions...');
+      console.log(' Admin requesting location permissions...');
       const { status } = await Location.requestForegroundPermissionsAsync();
       
       if (status !== 'granted') {
-        console.log('❌ Location permission denied');
+        console.log(' Location permission denied');
         Alert.alert(
           'Location Permission Required',
           'Please enable location access to see complaints near you.',
@@ -63,7 +63,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
         return;
       }
 
-      console.log('🔄 Getting admin current location...');
+      console.log(' Getting admin current location...');
       const location = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.Balanced,
         timeout: 10000,
@@ -76,12 +76,12 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
         longitudeDelta: 0.05,
       };
 
-      console.log('✅ Admin location obtained:', userCoords);
+      console.log(' Admin location obtained:', userCoords);
       setUserLocation(location.coords);
       setRegion(userCoords);
       
     } catch (error) {
-      console.error('❌ Error getting admin location:', error);
+      console.error(' Error getting admin location:', error);
       Alert.alert(
         'Location Error', 
         'Could not get your location. Showing default area.',
@@ -94,10 +94,10 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
 
   // Admin-specific search function
   const searchLocation = async (query) => {
-    console.log('🔍 ADMIN SEARCH TRIGGERED - Query:', query);
+    console.log(' ADMIN SEARCH TRIGGERED - Query:', query);
     
     if (!query || !query.trim()) {
-      console.log('❌ Empty query, clearing results');
+      console.log(' Empty query, clearing results');
       setSearchResults([]);
       setShowSearchResults(false);
       return;
@@ -109,7 +109,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
     try {
       const results = [];
       const queryLower = query.toLowerCase().trim();
-      console.log('🔎 Admin searching for:', queryLower);
+      console.log(' Admin searching for:', queryLower);
 
       // 1. Search predefined cities (most reliable)
       const cities = {
@@ -136,7 +136,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
           subtitle: 'Major City',
           type: 'city'
         });
-        console.log('✅ Found exact city match:', city.name);
+        console.log(' Found exact city match:', city.name);
       }
 
       // 2. Admin-specific: Search in complaints with priority filter
@@ -171,18 +171,18 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
               type: 'complaint'
             });
           });
-        console.log(`✅ Found ${matchingComplaints.length} matching complaints for admin`);
+        console.log(` Found ${matchingComplaints.length} matching complaints for admin`);
       }
 
       // Show results
       if (results.length > 0) {
-        console.log(`🎯 Setting ${results.length} admin search results:`, results.map(r => `${r.title} (${r.type})`));
+        console.log(` Setting ${results.length} admin search results:`, results.map(r => `${r.title} (${r.type})`));
         setSearchResults(results);
         setShowSearchResults(true);
 
         // Auto-select high priority complaints
         if (results.length === 1 && results[0].type === 'complaint' && results[0].complaint?.priority_score > 70) {
-          console.log('🚨 High priority complaint found, auto-selecting:', results[0].title);
+          console.log(' High priority complaint found, auto-selecting:', results[0].title);
           Alert.alert(
             'High Priority Complaint!', 
             `Priority ${Math.round(results[0].complaint.priority_score)}: ${results[0].title}`, 
@@ -194,25 +194,25 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
           }, 800);
         }
       } else {
-        console.log('❌ No results found for admin search');
+        console.log(' No results found for admin search');
         setSearchResults([]);
         setShowSearchResults(false);
         Alert.alert('No Results', `No results found for "${query}". Try searching for complaint keywords, status, or city names.`);
       }
 
     } catch (error) {
-      console.error('❌ Admin search error:', error);
+      console.error(' Admin search error:', error);
       setSearchResults([]);
       Alert.alert('Search Error', 'Search failed. Please try again.');
     } finally {
       setSearchLoading(false);
-      console.log('✅ Admin search completed');
+      console.log(' Admin search completed');
     }
   };
 
   // Handle search result selection
   const selectSearchResult = (result) => {
-    console.log('🎯 ADMIN SEARCH RESULT SELECTED:', result);
+    console.log(' ADMIN SEARCH RESULT SELECTED:', result);
     
     const newRegion = {
       latitude: result.latitude,
@@ -221,12 +221,12 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
       longitudeDelta: 0.08,
     };
     
-    console.log('📍 Admin moving to region:', newRegion);
+    console.log(' Admin moving to region:', newRegion);
     
     setIsProgrammaticMove(true);
     
     if (mapRef.current) {
-      console.log('🎬 Admin animating map to region');
+      console.log(' Admin animating map to region');
       mapRef.current.animateToRegion(newRegion, 1000);
     }
     
@@ -237,7 +237,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
     
     setTimeout(() => {
       setIsProgrammaticMove(false);
-      console.log('✅ Admin animation completed');
+      console.log(' Admin animation completed');
     }, 1500);
     
     // If it's a complaint result, show the complaint details
@@ -252,32 +252,32 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
   // Fetch heat map data
   const fetchHeatMapData = async () => {
     try {
-      console.log('🗺️ Admin fetching heat map data...');
+      console.log('️ Admin fetching heat map data...');
       const response = await fetch(`${API_BASE_URL}/api/heat-map/data?days=30`);
       const data = await response.json();
       
       if (data.success && data.data && data.data.points) {
-        console.log('✅ Admin heat map data received:', data.data.points.length, 'points');
+        console.log(' Admin heat map data received:', data.data.points.length, 'points');
         setHeatMapData(data.data.points);
       }
     } catch (error) {
-      console.error('❌ Error fetching admin heat map data:', error);
+      console.error(' Error fetching admin heat map data:', error);
     }
   };
 
   // Fetch complaints data with admin filters
   const fetchComplaints = async () => {
     try {
-      console.log('🔄 Admin fetching complaints from:', `${API_BASE_URL}/api/complaints/all`);
+      console.log(' Admin fetching complaints from:', `${API_BASE_URL}/api/complaints/all`);
       const response = await fetch(`${API_BASE_URL}/api/complaints/all`);
       const data = await response.json();
       
       if (data.success && data.complaints) {
-        console.log('✅ Admin fetched complaints:', data.complaints.length);
+        console.log(' Admin fetched complaints:', data.complaints.length);
         setComplaints(data.complaints);
       }
     } catch (error) {
-      console.error('❌ Error fetching admin complaints:', error);
+      console.error(' Error fetching admin complaints:', error);
       Alert.alert('Error', 'Failed to load complaints');
     } finally {
       setLoading(false);
@@ -305,16 +305,16 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
 
   // Admin search function
   const handleSearch = () => {
-    console.log('🚀 ADMIN MANUAL SEARCH TRIGGERED');
+    console.log(' ADMIN MANUAL SEARCH TRIGGERED');
     console.log('Current searchQuery state:', searchQuery);
     
     if (!searchQuery || !searchQuery.trim()) {
-      console.log('❌ Empty search query, showing alert');
+      console.log(' Empty search query, showing alert');
       Alert.alert('Search Required', 'Please enter a city name, complaint keyword, or status.');
       return;
     }
     
-    console.log('✅ Admin calling searchLocation with:', searchQuery);
+    console.log(' Admin calling searchLocation with:', searchQuery);
     searchLocation(searchQuery);
   };
 
@@ -332,7 +332,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
     const resolved = filteredComplaints.filter(c => c.status?.toLowerCase() === 'completed' || c.status?.toLowerCase() === 'resolved').length;
     const highPriority = filteredComplaints.filter(c => (c.priority_score || 0) > 70).length;
     
-    console.log(`📊 Admin Statistics - Total: ${filteredComplaints.length}, High Priority: ${highPriority}, Pending: ${pending}, Progress: ${inProgress}, Resolved: ${resolved}`);
+    console.log(` Admin Statistics - Total: ${filteredComplaints.length}, High Priority: ${highPriority}, Pending: ${pending}, Progress: ${inProgress}, Resolved: ${resolved}`);
     
     return { pending, inProgress, resolved, highPriority, total: filteredComplaints.length };
   })();
@@ -522,7 +522,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
           title={complaint.title}
           description={`Priority: ${Math.round(priorityScore)} | Status: ${complaint.status}`}
           onPress={() => {
-            console.log('📍 Admin marker pressed:', complaint.title);
+            console.log(' Admin marker pressed:', complaint.title);
             setIsMarkerInteracting(true);
             setSelectedComplaint(complaint);
             setShowComplaintModal(true);
@@ -644,7 +644,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
                 // Admin cluster view
                 <>
                   <View style={styles.statusSection}>
-                    <View style={[styles.statusBadge, { backgroundColor: '#2196F3' }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: '#1A1A1A' }]}>
                       <Text style={styles.statusText}>ADMIN CLUSTER VIEW</Text>
                     </View>
                     <View style={[styles.priorityBadge, { backgroundColor: getPriorityColor(selectedComplaint.avgPriority) }]}>
@@ -682,7 +682,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
                           style={styles.adminActionButton}
                           onPress={() => navigation.navigate('ComplaintDetails', { complaintId: complaint.id })}
                         >
-                          <Ionicons name="settings" size={20} color="#2196F3" />
+                          <Ionicons name="settings" size={20} color="#1A1A1A" />
                         </TouchableOpacity>
                       </TouchableOpacity>
                     ))}
@@ -730,7 +730,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
                     <Text style={styles.sectionTitle}>Admin Actions</Text>
                     <View style={styles.adminActionsRow}>
                       <TouchableOpacity
-                        style={[styles.actionButton, { backgroundColor: '#2196F3' }]}
+                        style={[styles.actionButton, { backgroundColor: '#1A1A1A' }]}
                         onPress={() => navigation.navigate('ComplaintDetails', { complaintId: selectedComplaint.id })}
                       >
                         <Ionicons name="create" size={20} color="white" />
@@ -772,11 +772,10 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#1976D2" />
+      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
       
-      {/* Admin Header */}
       <LinearGradient
-        colors={['#1565C0', '#1976D2', '#42A5F5']}
+        colors={['#1A1A1A', '#1A1A1A']}
         style={styles.header}
       >
         <View style={styles.headerContent}>
@@ -817,7 +816,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
             placeholderTextColor="#999"
             value={searchQuery}
             onChangeText={(text) => {
-              console.log('🔤 Admin text input changed:', text);
+              console.log(' Admin text input changed:', text);
               setSearchQuery(text);
               
               if (searchTimeout) {
@@ -829,7 +828,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
                 setShowSearchResults(false);
               } else if (text.trim().length >= 2) {
                 const newTimeout = setTimeout(() => {
-                  console.log('⏱️ Admin auto-searching after typing pause:', text);
+                  console.log('️ Admin auto-searching after typing pause:', text);
                   searchLocation(text);
                 }, 500);
                 setSearchTimeout(newTimeout);
@@ -844,13 +843,13 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
             onPress={handleSearch}
             style={styles.searchButton}
           >
-            <Ionicons name="search-circle" size={24} color="#1976D2" />
+            <Ionicons name="search-circle" size={24} color="#1A1A1A" />
           </TouchableOpacity>
           
           {searchQuery.length > 0 && (
             <TouchableOpacity 
               onPress={() => {
-                console.log('🗑️ Admin clearing search');
+                console.log('️ Admin clearing search');
                 setSearchQuery('');
                 setSearchResults([]);
                 setShowSearchResults(false);
@@ -863,7 +862,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
         </View>
         
         {searchLoading && (
-          <ActivityIndicator size="small" color="#1976D2" style={styles.searchLoader} />
+          <ActivityIndicator size="small" color="#1A1A1A" style={styles.searchLoader} />
         )}
       </View>
 
@@ -881,11 +880,11 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
                   break;
                 case 'city':
                   iconName = 'business';
-                  iconColor = '#2196F3';
+                  iconColor = '#1A1A1A';
                   break;
                 default:
                   iconName = 'location';
-                  iconColor = '#1976D2';
+                  iconColor = '#1A1A1A';
               }
 
               return (
@@ -926,7 +925,7 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
       <View style={styles.mapContainer}>
         {loading || locationLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#1976D2" />
+            <ActivityIndicator size="large" color="#1A1A1A" />
             <Text style={styles.loadingText}>
               {locationLoading ? 'Getting admin location...' : 'Loading complaints...'}
             </Text>
@@ -951,10 +950,10 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
 
               regionChangeTimeoutRef.current = setTimeout(() => {
                 if (!isProgrammaticMove && !showComplaintModal && !isMarkerInteracting) {
-                  console.log('👆 Admin manually moved map to:', newRegion);
+                  console.log(' Admin manually moved map to:', newRegion);
                   setRegion(newRegion);
                 } else {
-                  console.log('🤖 Ignoring admin region change (programmatic move, modal open, or marker interaction)');
+                  console.log(' Ignoring admin region change (programmatic move, modal open, or marker interaction)');
                 }
               }, 200);
             }}
@@ -1001,13 +1000,13 @@ const AdminComplaintMapScreen = ({ navigation, route }) => {
           Admin Dashboard • Filter: {filterStatus === 'all' ? 'All' : filterStatus.toUpperCase()}
         </Text>
         <Text style={styles.statsText}>
-          📍 {statsData.total} Complaints {showHeatmap ? 'in Priority Heatmap' : 'as Markers'} 
-          {statsData.highPriority > 0 && ` • 🚨 ${statsData.highPriority} High Priority`}
+          {statsData.total} Complaints {showHeatmap ? 'in Priority Heatmap' : 'as Markers'} 
+          {statsData.highPriority > 0 && ` • ${statsData.highPriority} High Priority`}
         </Text>
-        <Text style={styles.statsText}>
-          🔴 {statsData.pending} Pending • 
-          🟡 {statsData.inProgress} Progress • 
-          🟢 {statsData.resolved} Resolved
+        <Text style={styles.adminStatsText}>
+          {statsData.pending} Pending • 
+          {statsData.inProgress} Progress • 
+          {statsData.resolved} Resolved
         </Text>
       </View>
 
@@ -1088,10 +1087,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     maxHeight: 250,
     borderBottomWidth: 2,
-    borderBottomColor: '#1976D2',
+    borderBottomColor: '#1A1A1A',
     borderLeftWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#1976D2',
+    borderColor: '#1A1A1A',
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -1147,9 +1146,13 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   map: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   loadingContainer: {
     flex: 1,
@@ -1159,7 +1162,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#1976D2',
+    color: '#1A1A1A',
   },
   // Admin-specific pin styles
   adminPinContainer: {
@@ -1222,7 +1225,7 @@ const styles = StyleSheet.create({
   adminStatsTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#1976D2',
+    color: '#1A1A1A',
     textAlign: 'center',
     marginBottom: 4,
   },
@@ -1334,7 +1337,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   toggleButtonActive: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#1A1A1A',
     elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -1363,7 +1366,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#1976D2',
+    backgroundColor: '#1A1A1A',
   },
   filterTitle: {
     fontSize: 18,
@@ -1384,7 +1387,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   filterOptionActive: {
-    backgroundColor: '#1976D2',
+    backgroundColor: '#1A1A1A',
   },
   filterOptionText: {
     fontSize: 16,
@@ -1405,7 +1408,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     borderRadius: 8,
     borderLeftWidth: 3,
-    borderLeftColor: '#1976D2',
+    borderLeftColor: '#1A1A1A',
   },
   clusterBadge: {
     width: 30,

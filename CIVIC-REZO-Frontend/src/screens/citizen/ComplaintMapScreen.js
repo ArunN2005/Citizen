@@ -655,7 +655,7 @@ const ComplaintMapScreen = ({ navigation, route }) => {
                 // Cluster view
                 <>
                   <View style={styles.statusSection}>
-                    <View style={[styles.statusBadge, { backgroundColor: '#3498db' }]}>
+                    <View style={[styles.statusBadge, { backgroundColor: '#1A1A1A' }]}>
                       <Text style={styles.statusText}>CLUSTER VIEW</Text>
                     </View>
                   </View>
@@ -741,11 +741,10 @@ const ComplaintMapScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#2E7D32" />
+      <StatusBar barStyle="light-content" backgroundColor="#1A1A1A" />
       
-      {/* Header */}
       <LinearGradient
-        colors={['#1B5E20', '#2E7D32', '#60AD5E']}
+        colors={['#1A1A1A', '#1A1A1A']}
         style={styles.header}
       >
         <View style={styles.headerContent}>
@@ -806,7 +805,7 @@ const ComplaintMapScreen = ({ navigation, route }) => {
             onPress={handleSearch}
             style={styles.searchButton}
           >
-            <Ionicons name="search-circle" size={24} color="#2E7D32" />
+            <Ionicons name="search-circle" size={24} color="#1A1A1A" />
           </TouchableOpacity>
           
           {searchQuery.length > 0 && (
@@ -825,7 +824,7 @@ const ComplaintMapScreen = ({ navigation, route }) => {
         </View>
         
         {searchLoading && (
-          <ActivityIndicator size="small" color="#2E7D32" style={styles.searchLoader} />
+          <ActivityIndicator size="small" color="#1A1A1A" style={styles.searchLoader} />
         )}
         
         {/* Test Buttons - Remove after testing */}
@@ -856,7 +855,7 @@ const ComplaintMapScreen = ({ navigation, route }) => {
                   break;
                 default:
                   iconName = 'location';
-                  iconColor = '#2E7D32';
+                  iconColor = '#1A1A1A';
               }
 
               return (
@@ -892,7 +891,7 @@ const ComplaintMapScreen = ({ navigation, route }) => {
       <View style={styles.mapContainer}>
         {loading || locationLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#2E7D32" />
+            <ActivityIndicator size="large" color="#1A1A1A" />
             <Text style={styles.loadingText}>
               {locationLoading ? 'Getting your location...' : 'Loading complaints...'}
             </Text>
@@ -966,12 +965,12 @@ const ComplaintMapScreen = ({ navigation, route }) => {
       {/* Stats */}
       <View style={styles.statsContainer}>
         <Text style={styles.statsText}>
-          📍 {complaints.length} Complaints {showHeatmap ? 'in Density View' : 'as Markers'} {userLocation ? '• 🎯 Your Location Found' : ''}
+          {complaints.length} Complaints {showHeatmap ? 'in Density View' : 'as Markers'} {userLocation ? '• Your Location Found' : ''}
         </Text>
         <Text style={styles.statsText}>
-          🔴 {statsData.pending} Pending • 
-          🟡 {statsData.inProgress} Progress • 
-          🟢 {statsData.resolved} Resolved
+          {statsData.pending} Pending • 
+          {statsData.inProgress} Progress • 
+          {statsData.resolved} Resolved
         </Text>
       </View>
 
@@ -1059,10 +1058,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     maxHeight: 250,
     borderBottomWidth: 2,
-    borderBottomColor: '#2E7D32',
+    borderBottomColor: '#1A1A1A',
     borderLeftWidth: 2,
     borderRightWidth: 2,
-    borderColor: '#2E7D32',
+    borderColor: '#1A1A1A',
     elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -1107,9 +1106,13 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   map: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   loadingContainer: {
     flex: 1,
@@ -1119,7 +1122,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#2E7D32',
+    color: '#1A1A1A',
   },
   pinContainer: {
     alignItems: 'center',
@@ -1303,7 +1306,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   toggleButtonActive: {
-    backgroundColor: '#2E7D32',
+    backgroundColor: '#1A1A1A',
     elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -1328,7 +1331,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     borderRadius: 8,
     borderLeftWidth: 3,
-    borderLeftColor: '#3498db',
+    borderLeftColor: '#1A1A1A',
   },
   clusterBadge: {
     width: 30,
@@ -1369,11 +1372,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
-    shadowColor: '#3498db',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

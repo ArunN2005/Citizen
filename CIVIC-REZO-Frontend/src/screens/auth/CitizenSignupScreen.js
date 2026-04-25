@@ -8,7 +8,9 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { apiClient, makeApiCall } from '../../../config/supabase';
 
 const CitizenSignupScreen = ({ navigation }) => {
@@ -62,9 +64,9 @@ const CitizenSignupScreen = ({ navigation }) => {
     try {
       const signupData = {
         ...formData,
-        userType: 'citizen', // Ensure this is always citizen
+        userType: 'citizen',
       };
-      delete signupData.confirmPassword; // Remove confirm password
+      delete signupData.confirmPassword;
 
       const response = await makeApiCall(apiClient.auth.signup, {
         method: 'POST',
@@ -90,259 +92,263 @@ const CitizenSignupScreen = ({ navigation }) => {
     }
   };
 
+  const fields = [
+    { key: 'fullName', label: 'FULL NAME', placeholder: 'Enter your full name', icon: 'person-outline', required: true },
+    { key: 'email', label: 'EMAIL ADDRESS', placeholder: 'Enter email', icon: 'mail-outline', keyboard: 'email-address', required: true },
+    { key: 'phoneNumber', label: 'PHONE NUMBER', placeholder: 'Enter phone number', icon: 'call-outline', keyboard: 'phone-pad', required: true },
+    { key: 'address', label: 'ADDRESS', placeholder: 'Enter your address (optional)', icon: 'location-outline', multiline: true },
+  ];
+
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Back button */}
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Ionicons name="arrow-back" size={20} color="#374151" />
         </TouchableOpacity>
 
+        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.icon}>👤</Text>
-          <Text style={styles.title}>Join as Citizen</Text>
-          <Text style={styles.subtitle}>Create your account to start reporting civic issues</Text>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Register as a citizen to start reporting civic issues</Text>
         </View>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name *"
-            value={formData.fullName}
-            onChangeText={(value) => handleInputChange('fullName', value)}
-            placeholderTextColor="#999"
-          />
+        {/* Form fields */}
+        {fields.map((field) => (
+          <View key={field.key} style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>
+              {field.label} {field.required && <Text style={styles.required}>*</Text>}
+            </Text>
+            <View style={styles.inputContainer}>
+              <Ionicons name={field.icon} size={18} color="#9CA3AF" />
+              <TextInput
+                style={[styles.input, field.multiline && styles.multilineInput]}
+                placeholder={field.placeholder}
+                value={formData[field.key]}
+                onChangeText={(value) => handleInputChange(field.key, value)}
+                keyboardType={field.keyboard || 'default'}
+                autoCapitalize={field.keyboard === 'email-address' ? 'none' : 'words'}
+                multiline={field.multiline}
+                numberOfLines={field.multiline ? 2 : 1}
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+          </View>
+        ))}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email Address *"
-            value={formData.email}
-            onChangeText={(value) => handleInputChange('email', value)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#999"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number *"
-            value={formData.phoneNumber}
-            onChangeText={(value) => handleInputChange('phoneNumber', value)}
-            keyboardType="phone-pad"
-            placeholderTextColor="#999"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Address (Optional)"
-            value={formData.address}
-            onChangeText={(value) => handleInputChange('address', value)}
-            multiline
-            numberOfLines={2}
-            placeholderTextColor="#999"
-          />
-
-          <View style={styles.passwordContainer}>
+        {/* Password */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>PASSWORD <Text style={styles.required}>*</Text></Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" />
             <TextInput
-              style={styles.passwordInput}
-              placeholder="Password *"
+              style={styles.input}
+              placeholder="Min 6 characters"
               value={formData.password}
               onChangeText={(value) => handleInputChange('password', value)}
               secureTextEntry={!showPassword}
-              placeholderTextColor="#999"
+              placeholderTextColor="#9CA3AF"
             />
-            <TouchableOpacity
-              style={styles.eyeButton}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={18}
+                color="#9CA3AF"
+              />
             </TouchableOpacity>
           </View>
+        </View>
 
-          <View style={styles.passwordContainer}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>CONFIRM PASSWORD <Text style={styles.required}>*</Text></Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="lock-closed-outline" size={18} color="#9CA3AF" />
             <TextInput
-              style={styles.passwordInput}
-              placeholder="Confirm Password *"
+              style={styles.input}
+              placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChangeText={(value) => handleInputChange('confirmPassword', value)}
               secureTextEntry={!showConfirmPassword}
-              placeholderTextColor="#999"
+              placeholderTextColor="#9CA3AF"
             />
-            <TouchableOpacity
-              style={styles.eyeButton}
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              <Text style={styles.eyeIcon}>{showConfirmPassword ? '👁️' : '👁️‍🗨️'}</Text>
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Ionicons
+                name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={18}
+                color="#9CA3AF"
+              />
             </TouchableOpacity>
           </View>
+        </View>
 
-          <View style={styles.infoBox}>
-            <Text style={styles.infoText}>
-              * Required fields
-            </Text>
-            <Text style={styles.infoText}>
-              Your information will be used to verify and track your complaints.
-            </Text>
-          </View>
+        {/* Info notice */}
+        <View style={styles.noticeCard}>
+          <Ionicons name="information-circle-outline" size={18} color="#6B7280" />
+          <Text style={styles.noticeText}>
+            Your information will be used to verify and track your complaints.
+          </Text>
+        </View>
 
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleSignup}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Create Citizen Account</Text>
-            )}
-          </TouchableOpacity>
+        {/* Submit */}
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitDisabled]}
+          onPress={handleSignup}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <View style={styles.submitContent}>
+              <Text style={styles.submitText}>CREATE ACCOUNT</Text>
+              <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+            </View>
+          )}
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => navigation.navigate('CitizenLogin')}
-          >
-            <Text style={styles.linkText}>
-              Already have an account? Login here
-            </Text>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('CitizenLogin')}>
+            <Text style={styles.footerLink}>Login here</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
-  content: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 50,
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingTop: 56,
+    paddingBottom: 40,
   },
   backButton: {
-    marginBottom: 20,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#2E7D32',
-    fontWeight: '500',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   header: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  icon: {
-    fontSize: 50,
-    marginBottom: 15,
+    marginBottom: 28,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2E7D32',
-    marginBottom: 8,
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#111827',
+    letterSpacing: -0.3,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    paddingHorizontal: 20,
+    fontSize: 14,
+    color: '#6B7280',
+    lineHeight: 20,
   },
-  form: {
-    marginBottom: 30,
+  fieldGroup: {
+    marginBottom: 18,
   },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#374151',
+    letterSpacing: 1.2,
+    marginBottom: 8,
   },
-  passwordContainer: {
+  required: {
+    color: '#1A1A1A',
+  },
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    height: 48,
+    backgroundColor: '#FFFFFF',
+    gap: 10,
   },
-  passwordInput: {
+  input: {
     flex: 1,
-    padding: 15,
-    fontSize: 16,
+    fontSize: 15,
+    color: '#111827',
   },
-  eyeButton: {
-    padding: 15,
+  multilineInput: {
+    height: 60,
+    textAlignVertical: 'top',
+    paddingTop: 12,
   },
-  eyeIcon: {
-    fontSize: 20,
-  },
-  infoBox: {
-    backgroundColor: '#E8F5E8',
-    padding: 15,
+  noticeCard: {
+    backgroundColor: '#F3F4F6',
     borderRadius: 8,
-    marginBottom: 20,
-    borderLeftWidth: 4,
-    borderLeftColor: '#2E7D32',
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 24,
   },
-  infoText: {
-    fontSize: 14,
-    color: '#2E7D32',
-    marginBottom: 5,
+  noticeText: {
+    fontSize: 13,
+    color: '#6B7280',
+    flex: 1,
+    lineHeight: 18,
   },
-  button: {
-    backgroundColor: '#2E7D32',
-    padding: 16,
-    borderRadius: 12,
+  submitButton: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 6,
+    height: 52,
+    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
+  submitDisabled: {
+    backgroundColor: '#9CA3AF',
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  linkButton: {
+  submitContent: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    gap: 10,
   },
-  linkText: {
-    color: '#2E7D32',
-    fontSize: 16,
-    fontWeight: '500',
+  submitText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1.5,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+  },
+  footerText: {
+    fontSize: 13,
+    color: '#6B7280',
+  },
+  footerLink: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A1A1A',
+    textDecorationLine: 'underline',
   },
 });
 

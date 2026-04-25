@@ -11,7 +11,6 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { apiClient, makeApiCall } from '../../../config/supabase';
@@ -94,7 +93,7 @@ const PriorityQueue = ({ navigation }) => {
       if (filterDateRange) params.append('days', filterDateRange);
       if (filterAssigned) params.append('assigned', filterAssigned);
       
-      console.log('🔍 Loading complaints with filters:', {
+      console.log('Loading complaints with filters:', {
         searchText, filterLocation, filterCategory, filterStatus, 
         filterPriority, filterDateRange, filterAssigned
       });
@@ -110,7 +109,7 @@ const PriorityQueue = ({ navigation }) => {
           setComplaints(prev => [...prev, ...response.data.complaints]);
         }
         setPagination(response.data.pagination);
-        console.log(`✅ Loaded ${response.data.complaints.length} complaints`);
+        console.log(`Loaded ${response.data.complaints.length} complaints`);
       } else {
         Alert.alert('Error', response.message || 'Failed to load complaints');
       }
@@ -214,7 +213,7 @@ const PriorityQueue = ({ navigation }) => {
 
     setStatusChangeLoading(true);
     try {
-      console.log('🔄 Updating complaint status:', {
+      console.log('Updating complaint status:', {
         complaintId: selectedComplaint.id,
         currentStatus: selectedComplaint.status,
         newStatus: newStatus,
@@ -248,7 +247,7 @@ const PriorityQueue = ({ navigation }) => {
         if (contractorName) successMessage += `\nContractor assigned: ${contractorName}`;
 
         Alert.alert(
-          'Success! ✅', 
+          'Success', 
           successMessage,
           [{ 
             text: 'OK', 
@@ -265,11 +264,11 @@ const PriorityQueue = ({ navigation }) => {
           }]
         );
       } else {
-        console.error('❌ Status update failed:', response);
+        console.error('Status update failed:', response);
         Alert.alert('Update Failed', response.message || 'Failed to update complaint status. Please try again.');
       }
     } catch (error) {
-      console.error('❌ Status update error:', error);
+      console.error('Status update error:', error);
       Alert.alert(
         'Network Error', 
         'Failed to connect to server. Please check your connection and try again.'
@@ -308,11 +307,11 @@ const PriorityQueue = ({ navigation }) => {
           </View>
 
           <Text style={styles.complaintLocation} numberOfLines={1}>
-            📍 {complaint.location_address || 'Location not specified'}
+            {complaint.location_address || 'Location not specified'}
           </Text>
 
           <Text style={styles.complaintUser}>
-            👤 {complaint.users?.full_name || complaint.user_name || 'Unknown User'}
+            {complaint.users?.full_name || complaint.user_name || 'Unknown User'}
           </Text>
 
           {/* Progress Bar */}
@@ -339,12 +338,12 @@ const PriorityQueue = ({ navigation }) => {
               <Text style={styles.currentStageName}>{currentStage.stage_name || 'Processing'}</Text>
               {currentStage.officers && (
                 <Text style={styles.assignedOfficer}>
-                  👮 {currentStage.officers.name} ({currentStage.officers.department || 'No Dept'})
+                  Officer: {currentStage.officers.name} ({currentStage.officers.department || 'No Dept'})
                 </Text>
               )}
               {currentStage.contractors && (
                 <Text style={styles.assignedContractor}>
-                  🔧 {currentStage.contractors.name}{currentStage.contractors.company_name ? ` - ${currentStage.contractors.company_name}` : ''}
+                  Contractor: {currentStage.contractors.name}{currentStage.contractors.company_name ? ` - ${currentStage.contractors.company_name}` : ''}
                 </Text>
               )}
             </View>
@@ -356,7 +355,7 @@ const PriorityQueue = ({ navigation }) => {
               style={styles.viewButton}
               onPress={() => navigateToComplaintDetails(complaint.id)}
             >
-              <Ionicons name="eye-outline" size={16} color="#3498db" />
+              <Ionicons name="eye-outline" size={16} color="#1A1A1A" />
               <Text style={styles.buttonText}>View Status</Text>
             </TouchableOpacity>
 
@@ -364,7 +363,7 @@ const PriorityQueue = ({ navigation }) => {
               style={styles.editButton}
               onPress={() => showStatusChangeModal(complaint)}
             >
-              <Ionicons name="create-outline" size={16} color="#e67e22" />
+              <Ionicons name="create-outline" size={16} color="#1A1A1A" />
               <Text style={styles.buttonText}>Change Status</Text>
             </TouchableOpacity>
           </View>
@@ -380,42 +379,42 @@ const PriorityQueue = ({ navigation }) => {
   };
 
   const getPriorityColor = (score) => {
-    if (score >= 8) return '#e74c3c';
-    if (score >= 6) return '#f39c12';
-    if (score >= 4) return '#3498db';
-    return '#95a5a6';
+    if (score >= 8) return '#1A1A1A';
+    if (score >= 6) return '#1A1A1A';
+    if (score >= 4) return '#1A1A1A';
+    return '#9CA3AF';
   };
 
   const getStatusColor = (status) => {
     const colors = {
-      'pending': '#f39c12',
-      'in_progress': '#3498db',
-      'resolved': '#27ae60',
-      'rejected': '#e74c3c'
+      'pending': '#1A1A1A',
+      'in_progress': '#1A1A1A',
+      'resolved': '#1A1A1A',
+      'rejected': '#1A1A1A'
     };
-    return colors[status] || '#95a5a6';
+    return colors[status] || '#9CA3AF';
   };
 
   return (
     <View style={styles.container}>
       {/* Header */}
-      <LinearGradient colors={['#e74c3c', '#c0392b']} style={styles.header}>
+      <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Ionicons name="arrow-back" size={24} color="#374151" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Priority Queue</Text>
         <TouchableOpacity 
           style={styles.filterButtonContainer}
           onPress={() => setShowFilters(true)}
         >
-          <Ionicons name="filter-outline" size={24} color="#fff" />
+          <Ionicons name="filter-outline" size={24} color="#374151" />
           {getActiveFilterCount() > 0 && (
             <View style={styles.filterBadge}>
               <Text style={styles.filterBadgeText}>{getActiveFilterCount()}</Text>
             </View>
           )}
         </TouchableOpacity>
-      </LinearGradient>
+      </View>
 
       {/* Search Bar */}
       <View style={styles.searchSection}>
@@ -441,7 +440,7 @@ const PriorityQueue = ({ navigation }) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {filterLocation && (
                 <View style={styles.filterChip}>
-                  <Text style={styles.filterChipText}>📍 {filterLocation}</Text>
+                  <Text style={styles.filterChipText}>{filterLocation}</Text>
                   <TouchableOpacity onPress={() => setFilterLocation('')}>
                     <Ionicons name="close" size={14} color="#fff" />
                   </TouchableOpacity>
@@ -449,7 +448,7 @@ const PriorityQueue = ({ navigation }) => {
               )}
               {filterCategory && (
                 <View style={styles.filterChip}>
-                  <Text style={styles.filterChipText}>🏷️ {filterCategory.replace('_', ' ')}</Text>
+                  <Text style={styles.filterChipText}>{filterCategory.replace('_', ' ')}</Text>
                   <TouchableOpacity onPress={() => setFilterCategory('')}>
                     <Ionicons name="close" size={14} color="#fff" />
                   </TouchableOpacity>
@@ -457,7 +456,7 @@ const PriorityQueue = ({ navigation }) => {
               )}
               {filterStatus && (
                 <View style={styles.filterChip}>
-                  <Text style={styles.filterChipText}>📊 {filterStatus.replace('_', ' ')}</Text>
+                  <Text style={styles.filterChipText}>{filterStatus.replace('_', ' ')}</Text>
                   <TouchableOpacity onPress={() => setFilterStatus('')}>
                     <Ionicons name="close" size={14} color="#fff" />
                   </TouchableOpacity>
@@ -465,7 +464,7 @@ const PriorityQueue = ({ navigation }) => {
               )}
               {filterPriority && (
                 <View style={styles.filterChip}>
-                  <Text style={styles.filterChipText}>⚡ {priorityOptions.find(p => p.value === filterPriority)?.label.split(' ')[0] || filterPriority}</Text>
+                  <Text style={styles.filterChipText}>{priorityOptions.find(p => p.value === filterPriority)?.label.split(' ')[0] || filterPriority}</Text>
                   <TouchableOpacity onPress={() => setFilterPriority('')}>
                     <Ionicons name="close" size={14} color="#fff" />
                   </TouchableOpacity>
@@ -473,7 +472,7 @@ const PriorityQueue = ({ navigation }) => {
               )}
               {filterDateRange && (
                 <View style={styles.filterChip}>
-                  <Text style={styles.filterChipText}>📅 {dateRangeOptions.find(d => d.value === filterDateRange)?.label || filterDateRange}</Text>
+                  <Text style={styles.filterChipText}>{dateRangeOptions.find(d => d.value === filterDateRange)?.label || filterDateRange}</Text>
                   <TouchableOpacity onPress={() => setFilterDateRange('')}>
                     <Ionicons name="close" size={14} color="#fff" />
                   </TouchableOpacity>
@@ -481,7 +480,7 @@ const PriorityQueue = ({ navigation }) => {
               )}
               {filterAssigned && (
                 <View style={styles.filterChip}>
-                  <Text style={styles.filterChipText}>👤 {assignmentOptions.find(a => a.value === filterAssigned)?.label || filterAssigned}</Text>
+                  <Text style={styles.filterChipText}>{assignmentOptions.find(a => a.value === filterAssigned)?.label || filterAssigned}</Text>
                   <TouchableOpacity onPress={() => setFilterAssigned('')}>
                     <Ionicons name="close" size={14} color="#fff" />
                   </TouchableOpacity>
@@ -557,7 +556,7 @@ const PriorityQueue = ({ navigation }) => {
             <ScrollView style={styles.filterContent} showsVerticalScrollIndicator={false}>
               {/* Search by Location */}
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>📍 Search by Location</Text>
+                <Text style={styles.filterLabel}>Search by Location</Text>
                 <TextInput
                   style={styles.filterInput}
                   placeholder="Enter area, landmark, or address..."
@@ -569,7 +568,7 @@ const PriorityQueue = ({ navigation }) => {
 
               {/* Category Filter */}
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>🏷️ Complaint Category</Text>
+                <Text style={styles.filterLabel}>Complaint Category</Text>
                 <View style={styles.modernPickerContainer}>
                   <Picker
                     selectedValue={filterCategory}
@@ -591,7 +590,7 @@ const PriorityQueue = ({ navigation }) => {
 
               {/* Status Filter */}
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>📊 Complaint Status</Text>
+                <Text style={styles.filterLabel}>Complaint Status</Text>
                 <View style={styles.modernPickerContainer}>
                   <Picker
                     selectedValue={filterStatus}
@@ -613,7 +612,7 @@ const PriorityQueue = ({ navigation }) => {
 
               {/* Priority Filter */}
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>⚡ Priority Level</Text>
+                <Text style={styles.filterLabel}>Priority Level</Text>
                 <View style={styles.modernPickerContainer}>
                   <Picker
                     selectedValue={filterPriority}
@@ -635,7 +634,7 @@ const PriorityQueue = ({ navigation }) => {
 
               {/* Date Range Filter */}
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>📅 Date Range</Text>
+                <Text style={styles.filterLabel}>Date Range</Text>
                 <View style={styles.modernPickerContainer}>
                   <Picker
                     selectedValue={filterDateRange}
@@ -657,7 +656,7 @@ const PriorityQueue = ({ navigation }) => {
 
               {/* Assignment Filter */}
               <View style={styles.filterSection}>
-                <Text style={styles.filterLabel}>👤 Assignment Status</Text>
+                <Text style={styles.filterLabel}>Assignment Status</Text>
                 <View style={styles.modernPickerContainer}>
                   <Picker
                     selectedValue={filterAssigned}
@@ -681,7 +680,7 @@ const PriorityQueue = ({ navigation }) => {
               {getActiveFilterCount() > 0 && (
                 <View style={styles.filterSummary}>
                   <Text style={styles.filterSummaryTitle}>
-                    🔍 Active Filters ({getActiveFilterCount()})
+                    Active Filters ({getActiveFilterCount()})
                   </Text>
                   <Text style={styles.filterSummaryText}>
                     {getActiveFilterCount()} filter{getActiveFilterCount() > 1 ? 's' : ''} applied to your complaint search
@@ -735,7 +734,7 @@ const PriorityQueue = ({ navigation }) => {
               {selectedComplaint && (
                 <View style={styles.modernComplaintInfo}>
                   <View style={styles.complaintIconContainer}>
-                    <Ionicons name="document-text" size={20} color="#3498db" />
+                    <Ionicons name="document-text" size={20} color="#1A1A1A" />
                   </View>
                   <View style={styles.complaintDetails}>
                     <Text style={styles.modernComplaintTitle} numberOfLines={2}>
@@ -754,7 +753,7 @@ const PriorityQueue = ({ navigation }) => {
               {/* Status Selection */}
               <View style={styles.modernFieldContainer}>
                 <View style={styles.labelRow}>
-                  <Ionicons name="flag-outline" size={16} color="#e74c3c" />
+                  <Ionicons name="flag-outline" size={16} color="#1A1A1A" />
                   <Text style={styles.modernFieldLabel}>New Status *</Text>
                 </View>
                 <View style={styles.modernPickerContainer}>
@@ -764,10 +763,10 @@ const PriorityQueue = ({ navigation }) => {
                     style={styles.modernPicker}
                   >
                     <Picker.Item label="Choose New Status" value="" color="#bdc3c7" />
-                    <Picker.Item label="🟡 Pending" value="pending" />
-                    <Picker.Item label="🔵 In Progress" value="in_progress" />
-                    <Picker.Item label="🟢 Resolved" value="resolved" />
-                    <Picker.Item label="🔴 Rejected" value="rejected" />
+                    <Picker.Item label="Pending" value="pending" />
+                    <Picker.Item label="In Progress" value="in_progress" />
+                    <Picker.Item label="Resolved" value="resolved" />
+                    <Picker.Item label="Rejected" value="rejected" />
                   </Picker>
                   <Ionicons name="chevron-down-outline" size={20} color="#7f8c8d" style={styles.pickerIcon} />
                 </View>
@@ -776,7 +775,7 @@ const PriorityQueue = ({ navigation }) => {
               {/* Officer Assignment */}
               <View style={styles.modernFieldContainer}>
                 <View style={styles.labelRow}>
-                  <Ionicons name="person-outline" size={16} color="#3498db" />
+                  <Ionicons name="person-outline" size={16} color="#1A1A1A" />
                   <Text style={styles.modernFieldLabel}>Assign Officer</Text>
                 </View>
                 <View style={styles.modernPickerContainer}>
@@ -785,11 +784,11 @@ const PriorityQueue = ({ navigation }) => {
                     onValueChange={setSelectedOfficer}
                     style={styles.modernPicker}
                   >
-                    <Picker.Item label="👮 Select Officer (Optional)" value="" color="#bdc3c7" />
+                    <Picker.Item label="Select Officer (Optional)" value="" color="#bdc3c7" />
                     {officers.map(officer => (
                       <Picker.Item 
                         key={officer.id} 
-                        label={`👮 ${officer.name} - ${officer.department || 'No Dept'}`} 
+                        label={`${officer.name} - ${officer.department || 'No Dept'}`} 
                         value={officer.id.toString()} 
                       />
                     ))}
@@ -801,7 +800,7 @@ const PriorityQueue = ({ navigation }) => {
               {/* Contractor Assignment */}
               <View style={styles.modernFieldContainer}>
                 <View style={styles.labelRow}>
-                  <Ionicons name="construct-outline" size={16} color="#e67e22" />
+                  <Ionicons name="construct-outline" size={16} color="#1A1A1A" />
                   <Text style={styles.modernFieldLabel}>Assign Contractor</Text>
                 </View>
                 <View style={styles.modernPickerContainer}>
@@ -810,11 +809,11 @@ const PriorityQueue = ({ navigation }) => {
                     onValueChange={setSelectedContractor}
                     style={styles.modernPicker}
                   >
-                    <Picker.Item label="🔧 Select Contractor (Optional)" value="" color="#bdc3c7" />
+                    <Picker.Item label="Select Contractor (Optional)" value="" color="#bdc3c7" />
                     {contractors.map(contractor => (
                       <Picker.Item 
                         key={contractor.id} 
-                        label={`🔧 ${contractor.name}${contractor.specialization ? ` - ${contractor.specialization}` : ''}`} 
+                        label={`${contractor.name}${contractor.specialization ? ` - ${contractor.specialization}` : ''}`} 
                         value={contractor.id.toString()} 
                       />
                     ))}
@@ -826,7 +825,7 @@ const PriorityQueue = ({ navigation }) => {
               {/* Notes Section */}
               <View style={styles.modernFieldContainer}>
                 <View style={styles.labelRow}>
-                  <Ionicons name="document-text-outline" size={16} color="#9b59b6" />
+                  <Ionicons name="document-text-outline" size={16} color="#1A1A1A" />
                   <Text style={styles.modernFieldLabel}>Notes & Comments</Text>
                 </View>
                 <View style={styles.modernTextInputContainer}>
@@ -847,7 +846,7 @@ const PriorityQueue = ({ navigation }) => {
               {newStatus && (
                 <View style={styles.previewSection}>
                   <View style={styles.previewTitleRow}>
-                    <Ionicons name="eye-outline" size={16} color="#27ae60" />
+                    <Ionicons name="eye-outline" size={16} color="#1A1A1A" />
                     <Text style={styles.previewTitle}>Preview Changes</Text>
                   </View>
                   <View style={styles.previewContent}>
@@ -920,20 +919,24 @@ const PriorityQueue = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 50,
-    paddingBottom: 15,
+    paddingTop: 52,
+    paddingBottom: 16,
     paddingHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   headerTitle: {
-    color: '#fff',
+    color: '#111827',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    letterSpacing: -0.2,
   },
   filterButtonContainer: {
     position: 'relative',
@@ -942,7 +945,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -5,
     right: -5,
-    backgroundColor: '#f39c12',
+    backgroundColor: '#1A1A1A',
     borderRadius: 10,
     minWidth: 20,
     height: 20,
@@ -956,15 +959,17 @@ const styles = StyleSheet.create({
   },
   searchSection: {
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
   searchInput: {
     flex: 1,
@@ -980,8 +985,8 @@ const styles = StyleSheet.create({
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3498db',
-    borderRadius: 15,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginRight: 8,
@@ -994,8 +999,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   clearAllChip: {
-    backgroundColor: '#e74c3c',
-    borderRadius: 15,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 6,
     marginRight: 8,
@@ -1009,15 +1014,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   complaintCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 15,
-    marginVertical: 8,
-    borderRadius: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginVertical: 6,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
     overflow: 'hidden',
   },
   priorityBadge: {
@@ -1049,13 +1051,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: '600',
-    color: '#2c3e50',
+    color: '#111827',
     marginRight: 10,
   },
   statusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 4,
     marginLeft: 10,
   },
   statusText: {
@@ -1084,7 +1086,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#27ae60',
+    backgroundColor: '#1A1A1A',
     borderRadius: 3,
   },
   progressText: {
@@ -1111,12 +1113,12 @@ const styles = StyleSheet.create({
   },
   assignedOfficer: {
     fontSize: 12,
-    color: '#3498db',
+    color: '#1A1A1A',
     marginTop: 2,
   },
   assignedContractor: {
     fontSize: 12,
-    color: '#e67e22',
+    color: '#1A1A1A',
     marginTop: 2,
   },
   actionButtons: {
@@ -1127,10 +1129,10 @@ const styles = StyleSheet.create({
   viewButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 6,
     flex: 1,
     marginRight: 5,
     justifyContent: 'center',
@@ -1138,10 +1140,10 @@ const styles = StyleSheet.create({
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff3cd',
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 6,
     flex: 1,
     marginLeft: 5,
     justifyContent: 'center',
@@ -1181,7 +1183,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loadMoreButton: {
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     margin: 15,
     padding: 12,
     borderRadius: 8,
@@ -1189,8 +1191,9 @@ const styles = StyleSheet.create({
   },
   loadMoreText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+    letterSpacing: 0.5,
   },
   
   // Modal styles
@@ -1250,13 +1253,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#27ae60',
+    borderColor: '#1A1A1A',
     marginTop: 8,
   },
   filterSummaryTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#27ae60',
+    color: '#1A1A1A',
     marginBottom: 4,
   },
   filterSummaryText: {
@@ -1290,7 +1293,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,
@@ -1405,7 +1408,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#3498db',
+    borderLeftColor: '#1A1A1A',
   },
   complaintIconContainer: {
     width: 40,
@@ -1519,7 +1522,7 @@ const styles = StyleSheet.create({
   previewTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#27ae60',
+    color: '#1A1A1A',
     marginLeft: 8,
   },
   previewContent: {
@@ -1573,7 +1576,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingVertical: 12,
     borderRadius: 8,
     gap: 8,

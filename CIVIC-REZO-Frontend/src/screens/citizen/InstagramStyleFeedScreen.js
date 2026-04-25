@@ -41,7 +41,7 @@ const getGuestVoteStatus = async (complaintId) => {
     }
     return false;
   } catch (error) {
-    console.error('❌ Error getting guest vote status:', error);
+    console.error(' Error getting guest vote status:', error);
     return false;
   }
 };
@@ -105,7 +105,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
     fetchUserLocation();
     
     // ALWAYS fetch news on component mount
-    console.log('📰 Component mounted - fetching news immediately');
+    console.log(' Component mounted - fetching news immediately');
     fetchNews();
     
     // Entrance animation
@@ -130,7 +130,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
     if (userLocation) {
       fetchNearbyComplaints();
       // Also refresh news when location is available
-      console.log('📰 Location available - refreshing news with location data');
+      console.log(' Location available - refreshing news with location data');
       fetchNews();
     }
   }, [userLocation]);
@@ -153,7 +153,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       const locationData = await LocationService.getExactLocation();
 
       if (locationData) {
-        console.log('📍 User location:', locationData);
+        console.log(' User location:', locationData);
         setUserLocation({
           latitude: locationData.latitude,
           longitude: locationData.longitude,
@@ -166,7 +166,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
         );
       }
     } catch (error) {
-      console.error('❌ Error getting location:', error);
+      console.error(' Error getting location:', error);
       Alert.alert(
         "Location Error",
         "We need your location to show nearby complaints. Please enable location services.",
@@ -378,11 +378,11 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
         
         setComplaints(complaintsWithDetails);
       } else {
-        console.error('❌ Error fetching complaints:', response);
+        console.error(' Error fetching complaints:', response);
         setComplaints([]);
       }
     } catch (error) {
-      console.error('❌ Error fetching nearby complaints:', error);
+      console.error(' Error fetching nearby complaints:', error);
       Alert.alert(
         "Couldn't Load Complaints",
         "There was a problem loading complaints. Please try again later.",
@@ -411,68 +411,68 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
   const fetchNews = async () => {
     try {
       setNewsLoading(true);
-      console.log('📰 Starting to fetch location-based news...');
+      console.log(' Starting to fetch location-based news...');
       
       // DEBUG: Test NewsAPI directly before using NewsService
-      console.log('🧪 DEBUG: Testing NewsAPI directly...');
+      console.log(' DEBUG: Testing NewsAPI directly...');
       const directTestUrl = 'https://newsapi.org/v2/top-headlines?country=in&pageSize=3&apiKey=a7c4dd34b48e43ef843e3a9e9743b0b0';
       try {
         const directResponse = await fetch(directTestUrl);
         const directData = await directResponse.json();
-        console.log('🧪 Direct API test result:', directData.status, 'Articles:', directData.articles?.length || 0);
+        console.log(' Direct API test result:', directData.status, 'Articles:', directData.articles?.length || 0);
         if (directData.articles && directData.articles.length > 0) {
-          console.log('🧪 Direct API first headline:', directData.articles[0].title);
+          console.log(' Direct API first headline:', directData.articles[0].title);
         }
         if (directData.status === 'error') {
-          console.log('🧪 Direct API error:', directData.message, directData.code);
+          console.log(' Direct API error:', directData.message, directData.code);
         }
       } catch (directError) {
-        console.log('🧪 Direct API test failed:', directError.message);
+        console.log(' Direct API test failed:', directError.message);
       }
       
       // Clear cache to force fresh API call
       NewsService.clearCache();
-      console.log('📰 Cache cleared, forcing fresh news fetch');
+      console.log(' Cache cleared, forcing fresh news fetch');
       
       // Fetch top 10 news for carousel (increased from 3)
-      console.log('📰 Calling NewsService.getTopNews(10)...');
+      console.log(' Calling NewsService.getTopNews(10)...');
       const topNewsResult = await NewsService.getTopNews(10);
-      console.log('📰 Top news result received:', topNewsResult);
-      console.log('📰 Top news success:', topNewsResult.success);
-      console.log('📰 Top news count:', topNewsResult.news?.length || 0);
+      console.log(' Top news result received:', topNewsResult);
+      console.log(' Top news success:', topNewsResult.success);
+      console.log(' Top news count:', topNewsResult.news?.length || 0);
       
       if (topNewsResult.success && topNewsResult.news && topNewsResult.news.length > 0) {
-        console.log('📰 Setting topNews state with', topNewsResult.news.length, 'articles');
-        console.log('📰 First headline:', topNewsResult.news[0]?.headline);
+        console.log(' Setting topNews state with', topNewsResult.news.length, 'articles');
+        console.log(' First headline:', topNewsResult.news[0]?.headline);
         setTopNews(topNewsResult.news);
-        console.log('📰 topNews state should now be updated');
-        console.log('📰 News source:', topNewsResult.source); // Log if real API or placeholder
+        console.log(' topNews state should now be updated');
+        console.log(' News source:', topNewsResult.source); // Log if real API or placeholder
       } else {
-        console.log('❌ Top news result failed or empty, not setting topNews state');
-        console.log('📰 Received:', topNewsResult);
+        console.log(' Top news result failed or empty, not setting topNews state');
+        console.log(' Received:', topNewsResult);
       }
       
       // Fetch all news for interspersing
       const allNewsResult = await NewsService.getLocationNews();
-      console.log('📰 All news result:', allNewsResult);
+      console.log(' All news result:', allNewsResult);
       if (allNewsResult.success) {
         setAllNews(allNewsResult.news);
-        console.log('📰 Set all news:', allNewsResult.news.length, 'articles');
-        console.log('📰 Location:', allNewsResult.location); // Log user location
-        console.log('📰 News source:', allNewsResult.source); // Log if real API or placeholder
+        console.log(' Set all news:', allNewsResult.news.length, 'articles');
+        console.log(' Location:', allNewsResult.location); // Log user location
+        console.log(' News source:', allNewsResult.source); // Log if real API or placeholder
         
         // Log first few headlines to verify they're real/location-based
         if (allNewsResult.news.length > 0) {
-          console.log('📰 First few headlines:');
+          console.log(' First few headlines:');
           allNewsResult.news.slice(0, 3).forEach((article, index) => {
-            console.log(`📰 ${index + 1}. ${article.headline} (${article.source})`);
+            console.log(` ${index + 1}. ${article.headline} (${article.source})`);
           });
         }
       }
       
-      console.log(`📰 Fetched ${topNewsResult.news?.length || 0} top news and ${allNewsResult.news?.length || 0} total news`);
+      console.log(` Fetched ${topNewsResult.news?.length || 0} top news and ${allNewsResult.news?.length || 0} total news`);
     } catch (error) {
-      console.error('❌ Error fetching news:', error);
+      console.error(' Error fetching news:', error);
     } finally {
       setNewsLoading(false);
     }
@@ -480,7 +480,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
 
   // Handle news press
   const handleNewsPress = (article) => {
-    console.log('📰 News pressed:', article.headline);
+    console.log(' News pressed:', article.headline);
     Alert.alert(
       article.headline,
       `${article.summary}\n\nSource: ${article.source}`,
@@ -490,12 +490,12 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
 
   // Create feed data (only complaints - news shown in header)
   const createCombinedFeedData = () => {
-    console.log('🔄 Creating feed data...');
-    console.log('📋 Complaints:', complaints.length);
-    console.log('📰 All news:', allNews.length);
+    console.log(' Creating feed data...');
+    console.log(' Complaints:', complaints.length);
+    console.log(' All news:', allNews.length);
     
     if (!complaints.length) {
-      console.log('⚠️ No complaints available for feed');
+      console.log('️ No complaints available for feed');
       return [];
     }
     
@@ -506,7 +506,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       data: complaint
     }));
     
-    console.log('✅ Feed data created:', feedData.length, 'complaint items');
+    console.log(' Feed data created:', feedData.length, 'complaint items');
     console.log('� News items will be shown in header carousel:', allNews.length);
     
     return feedData;
@@ -514,13 +514,13 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
 
   // Update feed data when complaints or news change
   useEffect(() => {
-    console.log('🔄 Feed data update triggered');
-    console.log('📋 Current complaints:', complaints.length);
-    console.log('📰 Current all news:', allNews.length);
+    console.log(' Feed data update triggered');
+    console.log(' Current complaints:', complaints.length);
+    console.log(' Current all news:', allNews.length);
     
     const combined = createCombinedFeedData();
     setFeedData(combined);
-    console.log('✅ Feed data updated with', combined.length, 'items');
+    console.log(' Feed data updated with', combined.length, 'items');
   }, [complaints, allNews]);
 
   // Fetch news on component mount
@@ -557,7 +557,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       const voteResponse = await handleVoting(complaintId, apiClient, makeApiCall);
       
       if (!voteResponse.success) {
-        console.error('❌ Vote failed:', voteResponse);
+        console.error(' Vote failed:', voteResponse);
         Alert.alert(
           "Vote Failed",
           "There was a problem recording your vote. Please try again.",
@@ -588,12 +588,12 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
           }).start();
         }
         
-        console.log(`✅ Vote updated: ${refetchResponse.userVoted ? 'Voted' : 'Unvoted'}, Count: ${refetchResponse.voteCount}`);
+        console.log(` Vote updated: ${refetchResponse.userVoted ? 'Voted' : 'Unvoted'}, Count: ${refetchResponse.voteCount}`);
       } else {
-        console.error('❌ Failed to refetch vote count');
+        console.error(' Failed to refetch vote count');
       }
     } catch (error) {
-      console.error('❌ Error voting for complaint:', error);
+      console.error(' Error voting for complaint:', error);
       // Revert changes if API call errors
       const revertedComplaints = [...complaints];
       revertedComplaints[complaintIndex] = complaint;
@@ -682,7 +682,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       }
       return false;
     } catch (error) {
-      console.error(`❌ Error fetching complaint details for ID ${complaintId}:`, error);
+      console.error(` Error fetching complaint details for ID ${complaintId}:`, error);
       return false;
     }
   };
@@ -747,30 +747,30 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending':
-        return '#f57c00';
+        return '#1A1A1A';
       case 'in_progress':
-        return '#2196f3';
+        return '#1A1A1A';
       case 'resolved':
-        return '#4caf50';
+        return '#1A1A1A';
       case 'rejected':
-        return '#f44336';
+        return '#1A1A1A';
       default:
-        return '#9e9e9e';
+        return '#9CA3AF';
     }
   };
 
   const getStatusGradient = (status) => {
     switch (status) {
       case 'pending':
-        return ['#f39c12', '#e67e22'];
+        return ['#1A1A1A', '#1A1A1A'];
       case 'in_progress':
-        return ['#3498db', '#2980b9'];
+        return ['#1A1A1A', '#1A1A1A'];
       case 'resolved':
-        return ['#27ae60', '#229954'];
+        return ['#1A1A1A', '#1A1A1A'];
       case 'rejected':
-        return ['#e74c3c', '#c0392b'];
+        return ['#1A1A1A', '#1A1A1A'];
       default:
-        return ['#95a5a6', '#7f8c8d'];
+        return ['#1A1A1A', '#1A1A1A'];
     }
   };
 
@@ -818,7 +818,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('ComplaintMap')}
           >
             <LinearGradient
-              colors={['#4CAF50', '#8BC34A']}
+              colors={['#374151', '#1A1A1A']}
               style={styles.storyRing}
             >
               <View style={styles.storyIcon}>
@@ -833,7 +833,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('CitizenTransparency')}
           >
             <LinearGradient
-              colors={['#FF9800', '#FF5722']}
+              colors={['#6B7280', '#374151']}
               style={styles.storyRing}
             >
               <View style={styles.storyIcon}>
@@ -854,7 +854,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
               }}
             >
               <LinearGradient
-                colors={index % 2 === 0 ? ['#3498db', '#2980b9'] : ['#9b59b6', '#8e44ad']}
+                colors={index % 2 === 0 ? ['#374151', '#111827'] : ['#6B7280', '#374151']}
                 style={styles.storyRing}
               >
                 <View style={styles.storyIcon}>
@@ -954,7 +954,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
     // For any other invalid URL formats
     return (
       <View style={[styles.postImage, styles.imagePlaceholder]}>
-        <Ionicons name="warning-outline" size={60} color="#f39c12" />
+        <Ionicons name="warning-outline" size={60} color="#1A1A1A" />
         <Text style={styles.placeholderText}>Invalid Image URL</Text>
       </View>
     );
@@ -962,7 +962,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
 
   // Render function for feed items (only complaints)
   const renderFeedItem = ({ item, index }) => {
-    console.log(`🎨 Rendering complaint item ${index}:`, item.data.title);
+    console.log(` Rendering complaint item ${index}:`, item.data.title);
     
     // Only render complaint cards - news is shown in header
     return renderComplaintCard({ item: item.data, index });
@@ -1019,7 +1019,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
         <View style={styles.modernPostHeader}>
           <View style={styles.userContainer}>
             <LinearGradient
-              colors={['#3498db', '#2980b9']}
+              colors={['#374151', '#1A1A1A']}
               style={styles.modernUserAvatar}
             >
               <Text style={styles.modernUserAvatarText}>
@@ -1081,7 +1081,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                 <Ionicons 
                   name={item.userVoted ? "arrow-up-circle" : "arrow-up-circle-outline"} 
                   size={28} 
-                  color={item.userVoted ? "#3498db" : "#333"} 
+                  color={item.userVoted ? "#1A1A1A" : "#9CA3AF"} 
                 />
               </Animated.View>
             </TouchableOpacity>
@@ -1123,7 +1123,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
   if (locationLoading) {
     return (
       <View style={[styles.loadingContainer, { paddingTop: insets.top }]}>
-        <ActivityIndicator size="large" color="#3498db" />
+        <ActivityIndicator size="large" color="#1A1A1A" />
         <Text style={styles.loadingText}>Getting your location...</Text>
       </View>
     );
@@ -1136,13 +1136,13 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       {/* Modern Header with Gradient */}
       <Animated.View style={[styles.modernHeader, { opacity: headerOpacity }]}>
         <LinearGradient
-          colors={['rgba(52, 152, 219, 0.1)', 'transparent']}
+          colors={['rgba(255,255,255,0.95)', 'rgba(250,250,250,0.9)']}
           style={styles.headerGradient}
         >
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-              <Text style={styles.modernHeaderTitle}>EcoReports</Text>
-              <Text style={styles.headerSubtitle}>Community Voice</Text>
+              <Text style={styles.modernHeaderTitle}>CIVIC-REZO</Text>
+              <Text style={styles.headerSubtitle}>Nearby Reports</Text>
             </View>
             <View style={styles.headerRight}>
               {userLocation && (
@@ -1152,7 +1152,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                   activeOpacity={0.8}
                 >
                   <LinearGradient
-                    colors={['#3498db', '#2980b9']}
+                    colors={['#374151', '#1A1A1A']}
                     style={styles.locationGradient}
                   >
                     <Ionicons name="locate" size={14} color="#fff" />
@@ -1166,7 +1166,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                 activeOpacity={0.8}
               >
                 <LinearGradient
-                  colors={['#e74c3c', '#c0392b']}
+                  colors={['#1A1A1A', '#000000']}
                   style={styles.iconButtonGradient}
                 >
                   <Ionicons name="add" size={20} color="#fff" />
@@ -1189,7 +1189,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       {loading && !refreshing ? (
         <Animated.View style={[styles.modernLoadingContainer, { transform: [{ translateY: slideAnim }] }]}>
           <LinearGradient
-            colors={['#3498db', '#2980b9']}
+            colors={['#374151', '#1A1A1A']}
             style={styles.loadingGradient}
           >
             <ActivityIndicator size="large" color="#fff" />
@@ -1199,16 +1199,15 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
         </Animated.View>
       ) : complaints.length === 0 ? (
         <Animated.View style={[styles.modernEmptyContainer, { transform: [{ translateY: slideAnim }] }]}>
-          <LinearGradient
-            colors={['#ecf0f1', '#bdc3c7']}
-            style={styles.emptyIconContainer}
+          <View
+            style={[styles.emptyIconContainer, { backgroundColor: '#F3F4F6' }]}
           >
-            <Ionicons name="leaf-outline" size={50} color="#27ae60" />
-          </LinearGradient>
-          <Text style={styles.modernEmptyTitle}>Your Area Looks Clean! 🌱</Text>
+            <Ionicons name="checkmark-circle-outline" size={50} color="#9CA3AF" />
+          </View>
+          <Text style={styles.modernEmptyTitle}>No Reports Nearby</Text>
           <Text style={styles.modernEmptyText}>
-            No environmental issues reported within 3km.{'\n'}
-            Be the first to make a difference!
+            No issues reported within 3km.{'\n'}
+            Be the first to submit a report.
           </Text>
           <TouchableOpacity 
             style={styles.modernReportButton}
@@ -1216,7 +1215,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={['#27ae60', '#229954']}
+              colors={['#1A1A1A', '#374151']}
               style={styles.reportButtonGradient}
             >
               <Ionicons name="add-circle" size={20} color="#fff" />
@@ -1239,24 +1238,24 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
               <RefreshControl
                 refreshing={refreshing || newsLoading}
                 onRefresh={onRefresh}
-                colors={['#3498db', '#27ae60']}
-                tintColor="#3498db"
-                progressBackgroundColor="#f8f9fa"
+                colors={['#1A1A1A', '#374151']}
+                tintColor="#1A1A1A"
+                progressBackgroundColor="#FAFAFA"
               />
             }
             contentContainerStyle={styles.flatListContainer}
             ItemSeparatorComponent={() => <View style={styles.cardSeparator} />}
             ListHeaderComponent={() => {
-              console.log('📱 Rendering ListHeaderComponent');
-              console.log('📰 Top news length:', topNews.length);
-              console.log('📰 Top news:', topNews.map(n => n.headline));
+              console.log(' Rendering ListHeaderComponent');
+              console.log(' Top news length:', topNews.length);
+              console.log(' Top news:', topNews.map(n => n.headline));
               
               return (
               <View>
                 {/* News Carousel */}
                 {topNews.length > 0 ? (
                   <>
-                    {console.log('📰 Rendering NewsCarousel with', topNews.length, 'items')}
+                    {console.log(' Rendering NewsCarousel with', topNews.length, 'items')}
                     <NewsCarousel
                       news={topNews}
                       onNewsPress={handleNewsPress}
@@ -1264,10 +1263,10 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                   </>
                 ) : (
                   <>
-                    {console.log('⚠️ No top news to display')}
+                    {console.log('️ No top news to display')}
                     <View style={{ padding: 10, backgroundColor: '#f0f0f0', margin: 10, borderRadius: 8 }}>
                       <Text style={{ textAlign: 'center', color: '#666' }}>
-                        📰 Loading Location News... (Debug: {topNews.length} news available)
+                        Loading Location News... (Debug: {topNews.length} news available)
                       </Text>
                     </View>
                   </>
@@ -1291,7 +1290,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             activeOpacity={0.8}
           >
             <View style={styles.activeTabContainer}>
-              <Ionicons name="home" size={22} color="#3498db" />
+              <Ionicons name="home" size={22} color="#1A1A1A" />
               <Text style={styles.activeTabText}>Feed</Text>
             </View>
           </TouchableOpacity>
@@ -1301,7 +1300,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('ComplaintMap')}
             activeOpacity={0.8}
           >
-            <Ionicons name="map-outline" size={22} color="#666" />
+            <Ionicons name="map-outline" size={22} color="#9CA3AF" />
             <Text style={styles.tabText}>Map</Text>
           </TouchableOpacity>
           
@@ -1311,7 +1310,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             activeOpacity={0.8}
           >
             <LinearGradient
-              colors={['#e74c3c', '#c0392b']}
+              colors={['#1A1A1A', '#000000']}
               style={styles.modernAddButtonContainer}
             >
               <Ionicons name="add" size={24} color="#fff" />
@@ -1323,7 +1322,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('CitizenTransparency')}
             activeOpacity={0.8}
           >
-            <Ionicons name="stats-chart-outline" size={22} color="#666" />
+            <Ionicons name="stats-chart-outline" size={22} color="#9CA3AF" />
             <Text style={styles.tabText}>Stats</Text>
           </TouchableOpacity>
           
@@ -1332,7 +1331,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('PersonalReports')}
             activeOpacity={0.8}
           >
-            <Ionicons name="person-outline" size={22} color="#666" />
+            <Ionicons name="person-outline" size={22} color="#9CA3AF" />
             <Text style={styles.tabText}>Profile</Text>
           </TouchableOpacity>
         </LinearGradient>
@@ -1352,30 +1351,28 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
           position: 'absolute',
           bottom: 100,
           right: 20,
-          width: 60,
-          height: 60,
-          borderRadius: 30,
-          backgroundColor: '#3498db',
+          width: 56,
+          height: 56,
+          borderRadius: 28,
+          backgroundColor: '#1A1A1A',
           justifyContent: 'center',
           alignItems: 'center',
-          elevation: 8,
-          shadowColor: '#3498db',
+          elevation: 6,
+          shadowColor: '#000000',
           shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
+          shadowOpacity: 0.15,
           shadowRadius: 8,
-          borderWidth: 3,
-          borderColor: '#FFFFFF',
           zIndex: 1000,
         }}
         onPress={() => {
-          console.log('🤖 Blue chatbot button pressed from Instagram feed!');
+          console.log('Chatbot button pressed from feed');
           navigation.navigate('CivicChatbot');
         }}
         activeOpacity={0.8}
       >
-        <MaterialCommunityIcons 
-          name="robot-happy" 
-          size={28} 
+        <Ionicons 
+          name="chatbubble-ellipses" 
+          size={24} 
           color="#FFFFFF" 
         />
       </TouchableOpacity>
@@ -1386,7 +1383,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FAFAFA',
   },
   
   // Modern Header Styles
@@ -1415,16 +1412,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modernHeaderTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#2c3e50',
-    letterSpacing: -0.5,
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    letterSpacing: 1,
   },
   headerSubtitle: {
-    fontSize: 13,
-    color: '#7f8c8d',
-    fontWeight: '500',
-    marginTop: -2,
+    fontSize: 11,
+    color: '#9CA3AF',
+    fontWeight: '400',
+    marginTop: 2,
+    letterSpacing: 0.3,
   },
   headerRight: {
     flexDirection: 'row',
@@ -1434,7 +1432,7 @@ const styles = StyleSheet.create({
   modernLocationButton: {
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#3498db',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -1462,7 +1460,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#e74c3c',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 5,
@@ -1472,11 +1470,11 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#bdc3c7',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
 
   // Modern Loading Styles
@@ -1494,7 +1492,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#3498db',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -1528,7 +1526,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    shadowColor: '#27ae60',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
@@ -1551,7 +1549,7 @@ const styles = StyleSheet.create({
   modernReportButton: {
     borderRadius: 25,
     overflow: 'hidden',
-    shadowColor: '#27ae60',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
@@ -1581,17 +1579,11 @@ const styles = StyleSheet.create({
 
   // Modern Post Container
   modernPostContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     marginVertical: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
     overflow: 'hidden',
   },
 
@@ -1601,7 +1593,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fafbfc',
+    backgroundColor: '#FFFFFF',
   },
   modernUserAvatar: {
     width: 44,
@@ -1610,7 +1602,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
-    shadowColor: '#3498db',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -1622,8 +1614,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   modernUserName: {
-    fontWeight: '700',
-    color: '#2c3e50',
+    fontWeight: '600',
+    color: '#111827',
     fontSize: 15,
     marginBottom: 2,
   },
@@ -1659,7 +1651,7 @@ const styles = StyleSheet.create({
   modernMoreButton: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#F3F4F6',
   },
 
   // Modern Bottom Tab Bar
@@ -1693,21 +1685,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 4,
     paddingHorizontal: 12,
-    backgroundColor: '#e3f2fd',
+    backgroundColor: '#F3F4F6',
     borderRadius: 20,
   },
   activeTabText: {
     fontSize: 11,
-    fontWeight: '700',
-    color: '#3498db',
+    fontWeight: '600',
+    color: '#1A1A1A',
     marginTop: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
   tabText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#666',
+    color: '#9CA3AF',
     marginTop: 2,
   },
   modernAddButtonContainer: {
@@ -1716,7 +1707,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#e74c3c',
+    shadowColor: '#1A1A1A',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
@@ -1790,7 +1781,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -1972,7 +1963,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -2011,7 +2002,7 @@ const styles = StyleSheet.create({
   reportButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3498db',
+    backgroundColor: '#1A1A1A',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,

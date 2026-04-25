@@ -8,7 +8,9 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient, makeApiCall } from '../../../config/supabase';
 
@@ -63,235 +65,224 @@ const AdminLoginScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.content}>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#0A0A0A" />
+
+      {/* Brand panel */}
+      <View style={styles.brandPanel}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backButtonText}>← Back</Text>
+          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
         </TouchableOpacity>
 
-        <View style={styles.header}>
-          <Text style={styles.icon}>👨‍💼</Text>
-          <Text style={styles.title}>Admin Login</Text>
-          <Text style={styles.subtitle}>Secure administrator access</Text>
+        <View style={styles.brandContent}>
+          <Text style={styles.brandName}>CIVIC{'\n'}REZO</Text>
+          <Text style={styles.brandSub}>INSTITUTIONAL PORTAL</Text>
         </View>
+      </View>
 
-        <View style={styles.securityNotice}>
-          <Text style={styles.securityIcon}>🔒</Text>
-          <Text style={styles.securityText}>
-            Admin portal uses enhanced security measures. Your login activity is monitored.
-          </Text>
-        </View>
+      {/* Form */}
+      <ScrollView
+        style={styles.formPanel}
+        contentContainerStyle={styles.formContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.formTitle}>Admin Access</Text>
+        <Text style={styles.formSubtitle}>Secure login for authorized personnel only.</Text>
 
-        <View style={styles.form}>
-          <TextInput
-            style={styles.input}
-            placeholder="Admin Email Address"
-            value={formData.email}
-            onChangeText={(value) => handleInputChange('email', value)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#999"
-          />
-
-          <View style={styles.passwordContainer}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>ADMIN ID / CREDENTIAL</Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="shield-outline" size={18} color="#9CA3AF" />
             <TextInput
-              style={styles.passwordInput}
-              placeholder="Admin Password"
+              style={styles.input}
+              placeholder="Enter numeric identifier"
+              value={formData.email}
+              onChangeText={(value) => handleInputChange('email', value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.fieldLabel}>SECURITY PASSKEY</Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="key-outline" size={18} color="#9CA3AF" />
+            <TextInput
+              style={styles.input}
+              placeholder="••••••••••••••"
               value={formData.password}
               onChangeText={(value) => handleInputChange('password', value)}
               secureTextEntry={!showPassword}
-              placeholderTextColor="#999"
+              placeholderTextColor="#9CA3AF"
             />
-            <TouchableOpacity
-              style={styles.eyeButton}
-              onPress={() => setShowPassword(!showPassword)}
-            >
-              <Text style={styles.eyeIcon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={18}
+                color="#9CA3AF"
+              />
             </TouchableOpacity>
           </View>
+        </View>
 
-          <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>Secure Login</Text>
-            )}
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.submitDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <View style={styles.submitContent}>
+              <Text style={styles.submitText}>VERIFY IDENTITY</Text>
+              <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
+            </View>
+          )}
+        </TouchableOpacity>
+
+        <View style={styles.linksRow}>
+          <TouchableOpacity onPress={() => navigation.navigate('AdminSignup')}>
+            <Text style={styles.linkText}>REQUEST ACCESS</Text>
           </TouchableOpacity>
-
           <TouchableOpacity
-            style={styles.linkButton}
-            onPress={() => navigation.navigate('AdminSignup')}
-          >
-            <Text style={styles.linkText}>
-              Need admin access? Register here
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.linkButton}
             onPress={() => Alert.alert('Admin Support', 'For password reset, please contact your system administrator.')}
           >
-            <Text style={styles.linkText}>Forgot Password?</Text>
+            <Text style={styles.linkText}>PROTOCOL HELP</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Citizen user? 
-          </Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Welcome')}
-          >
-            <Text style={styles.footerLink}> Switch to Citizen Portal</Text>
+          <Text style={styles.footerText}>Citizen user? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Welcome')}>
+            <Text style={styles.footerLink}>Switch to Citizen Portal</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#FFFFFF',
   },
-  content: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 50,
+  brandPanel: {
+    backgroundColor: '#0A0A0A',
+    paddingTop: 56,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
   },
   backButton: {
-    marginBottom: 20,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#1976D2',
-    fontWeight: '500',
-  },
-  header: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
   },
-  icon: {
-    fontSize: 50,
-    marginBottom: 15,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1976D2',
+  brandContent: {},
+  brandName: {
+    fontSize: 34,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    lineHeight: 40,
+    letterSpacing: 1,
     marginBottom: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
+  brandSub: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: 'rgba(255,255,255,0.45)',
+    letterSpacing: 2,
   },
-  securityNotice: {
-    backgroundColor: '#E3F2FD',
-    padding: 15,
-    borderRadius: 12,
-    marginBottom: 30,
+  formPanel: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  formContent: {
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 40,
+  },
+  formTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 6,
+  },
+  formSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginBottom: 32,
+  },
+  fieldGroup: {
+    marginBottom: 20,
+  },
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#374151',
+    letterSpacing: 1.2,
+    marginBottom: 8,
+  },
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: '#1976D2',
-  },
-  securityIcon: {
-    fontSize: 18,
-    marginRight: 10,
-  },
-  securityText: {
-    fontSize: 14,
-    color: '#1976D2',
-    flex: 1,
-  },
-  form: {
-    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 6,
+    paddingHorizontal: 14,
+    height: 48,
+    backgroundColor: '#FAFAFA',
+    gap: 10,
   },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    flex: 1,
+    fontSize: 15,
+    color: '#111827',
   },
-  passwordContainer: {
+  submitButton: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 6,
+    height: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  submitDisabled: {
+    backgroundColor: '#9CA3AF',
+  },
+  submitContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    gap: 10,
   },
-  passwordInput: {
-    flex: 1,
-    padding: 15,
-    fontSize: 16,
+  submitText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: 1.5,
   },
-  eyeButton: {
-    padding: 15,
-  },
-  eyeIcon: {
-    fontSize: 20,
-  },
-  button: {
-    backgroundColor: '#1976D2',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  linkButton: {
-    alignItems: 'center',
-    marginBottom: 15,
+  linksRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 32,
   },
   linkText: {
-    color: '#1976D2',
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: '500',
+    color: '#6B7280',
+    letterSpacing: 0.8,
   },
   footer: {
     flexDirection: 'row',
@@ -299,16 +290,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: '#F3F4F6',
   },
   footerText: {
-    color: '#666',
-    fontSize: 14,
+    color: '#6B7280',
+    fontSize: 13,
   },
   footerLink: {
-    color: '#2E7D32',
-    fontSize: 14,
-    fontWeight: '500',
+    color: '#1A1A1A',
+    fontSize: 13,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
 });
 
