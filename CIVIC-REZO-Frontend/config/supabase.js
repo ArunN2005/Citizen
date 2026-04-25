@@ -3,15 +3,46 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
+const API_TIMEOUT_MS = 12000;
+
+// Resolve Metro host (for Expo Go) so API host matches the running dev machine IP
+const getExpoMetroHost = () => {
+  const hostUriFromExpoConfig = Constants?.expoConfig?.hostUri;
+  if (hostUriFromExpoConfig) {
+    return hostUriFromExpoConfig.split(':')[0];
+  }
+
+  const debuggerHostFromManifest = Constants?.manifest?.debuggerHost;
+  if (debuggerHostFromManifest) {
+    return debuggerHostFromManifest.split(':')[0];
+  }
+
+  const hostUriFromManifest2 = Constants?.manifest2?.extra?.expoClient?.hostUri;
+  if (hostUriFromManifest2) {
+    return hostUriFromManifest2.split(':')[0];
+  }
+
+  return null;
+};
+
 // Simple API URL generation without external dependencies
 const generateApiBaseUrl = () => {
+  const port = process.env.EXPO_PUBLIC_API_PORT || '3001';
+
+  // In native dev (Expo Go), prefer Metro host to avoid stale hardcoded IPs.
+  if (__DEV__ && Platform.OS !== 'web') {
+    const metroHost = getExpoMetroHost();
+    if (metroHost) {
+      return `http://${metroHost}:${port}`;
+    }
+  }
+
   // Use environment variables set by setup-network.js
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
 
   const host = process.env.EXPO_PUBLIC_API_HOST || 'localhost';
-  const port = process.env.EXPO_PUBLIC_API_PORT || '3001';
   return `http://${host}:${port}`;
 };
 
@@ -36,6 +67,7 @@ const getApiBaseUrl = () => {
 export const API_BASE_URL = getApiBaseUrl();
 
 console.log('🔗 API_BASE_URL configured as:', API_BASE_URL);
+console.log('📡 Expo Metro host detected as:', getExpoMetroHost() || 'NOT_DETECTED');
 console.log('📱 Platform:', Platform.OS);
 console.log('🔧 Development mode:', __DEV__);
 
@@ -72,6 +104,9 @@ export const apiClient = {
 
 // Enhanced API call function with auto-discovery
 export const makeApiCall = async (url, options = {}) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
   try {
     console.log('📡 Making API call to:', url);
 
@@ -87,6 +122,7 @@ export const makeApiCall = async (url, options = {}) => {
     const mergedOptions = {
       ...defaultOptions,
       ...options,
+      signal: controller.signal,
       headers: {
         ...defaultOptions.headers,
         ...options.headers,
@@ -119,11 +155,17 @@ export const makeApiCall = async (url, options = {}) => {
       stack: error.stack
     });
 
+    if (error.name === 'AbortError') {
+      throw new Error('Server request timed out. Please check backend connectivity and try again.');
+    }
+
     // Provide more specific error messages
     if (error.message.includes('Network request failed')) {
       throw new Error('Cannot connect to server. Make sure the backend is running and accessible.');
     }
 
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };

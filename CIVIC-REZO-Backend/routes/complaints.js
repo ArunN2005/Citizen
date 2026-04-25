@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { supabase } = require('../config/supabase');
 const LocationPriorityService = require('../services/LocationPriorityService');
+const XSocialSignalService = require('../services/XSocialSignalService');
 
 // Initialize services
 const locationPriorityService = new LocationPriorityService();
+const xSocialSignalService = new XSocialSignalService();
 
 /**
  * Submit a new complaint with automatic location processing
@@ -92,6 +94,8 @@ router.post('/submit', async (req, res) => {
       imageUrl,
       imageValidation,
       locationData,
+      runSocialScraping = false,
+      includeSocialDebug = true,
       userId = 'anonymous',
       userType = 'citizen'
     } = req.body;
@@ -385,7 +389,106 @@ router.post('/submit', async (req, res) => {
     }
     
     // Prepare response - safe access in case structure changed
-    const complaintRecord = complaint && complaint[0] ? complaint[0] : {}; 
+    const complaintRecord = complaint && complaint[0] ? complaint[0] : {};
+
+    // Fetch X social signals to corroborate complaint and apply a bounded score boost.
+    let socialSignals = {
+      enabled: xSocialSignalService.isEnabled(),
+      query: null,
+      posts: [],
+      socialBoost: 0,
+      processingTimeMs: 0,
+      status: 'disabled'
+    };
+
+    const locationTextForSearch = `${locationData?.address || ''} ${locationData?.description || ''}`.trim();
+    const socialDebug = {
+      manualTriggerRequested: Boolean(runSocialScraping),
+      xApiEnabled: xSocialSignalService.isEnabled(),
+      locationInput: {
+        latitude: locationData?.latitude || null,
+        longitude: locationData?.longitude || null,
+        address: locationData?.address || null,
+        description: locationData?.description || null,
+        locationTextForSearch
+      },
+      search: {
+        query: null,
+        keywords: [],
+        hashtags: [],
+        locationTerms: []
+      },
+      execution: {
+        status: 'not_requested',
+        fetchedCount: 0,
+        matchedCount: 0,
+        verifiedCount: 0,
+        processingTimeMs: 0,
+        error: null
+      }
+    };
+
+    if (!runSocialScraping) {
+      socialSignals.status = 'skipped_manual';
+      socialDebug.execution.status = 'skipped_manual';
+    } else if (complaintRecord.id) {
+      socialSignals = await xSocialSignalService.searchRecentPosts({
+        title,
+        description,
+        category,
+        locationData,
+        imageValidation
+      });
+
+      socialSignals.status = socialSignals.error ? 'failed' : 'completed';
+
+      socialDebug.search = {
+        query: socialSignals.query || null,
+        fallbackQuery: socialSignals.fallbackQuery || null,
+        fallbackQueryUsed: !!socialSignals.fallbackQueryUsed,
+        keywords: socialSignals.keywords || [],
+        classificationTerms: socialSignals.classificationTerms || [],
+        hashtags: socialSignals.hashtags || [],
+        locationTerms: socialSignals.locationTerms || [],
+        resolvedLocationText: socialSignals.resolvedLocationText || null
+      };
+      socialDebug.execution = {
+        status: socialSignals.status,
+        fetchedCount: socialSignals.fetchedCount || 0,
+        matchedCount: socialSignals.posts?.length || 0,
+        verifiedCount: socialSignals.crossValidation?.verifiedCount || 0,
+        processingTimeMs: socialSignals.processingTimeMs || 0,
+        error: socialSignals.error || null,
+        fetchedPreview: socialSignals.fetchedPreview || []
+      };
+
+      if (socialSignals.posts?.length) {
+        const persistResult = await xSocialSignalService.persistSignals(
+          supabase,
+          complaintRecord.id,
+          socialSignals
+        );
+
+        if (!persistResult.persisted) {
+          console.warn('⚠️ Could not persist social signals:', persistResult.reason);
+        }
+      }
+    }
+
+    const baseScore = Number(priorityAnalysis.totalScore || 0);
+    const socialBoost = Number(socialSignals.socialBoost || 0);
+    const finalScore = Number(Math.min(0.999, baseScore + socialBoost).toFixed(4));
+    const finalPriorityLevel = getPriorityLevelFromScore(finalScore);
+
+    if (complaintRecord.id && socialBoost > 0) {
+      await supabase
+        .from('complaints')
+        .update({
+          priority_score: parseFloat(finalScore.toFixed(2)),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', complaintRecord.id);
+    }
     
     const response = {
       success: true,
@@ -393,26 +496,45 @@ router.post('/submit', async (req, res) => {
         id: complaintRecord.id || `temp-${Date.now()}`,
         title: complaintRecord.title || title,
         category: complaintRecord.category || category,
-        priorityScore: complaintRecord.priority_score || Math.round(priorityAnalysis.totalScore * 100),
+        priorityScore: Math.round(finalScore * 100),
         status: complaintRecord.status || 'pending',
         submittedAt: complaintRecord.created_at || new Date().toISOString()
       },
       priorityAnalysis: {
-        totalScore: priorityAnalysis.totalScore,
-        priorityLevel: priorityAnalysis.priorityLevel,
+        totalScore: finalScore,
+        baseScore,
+        socialBoost,
+        priorityLevel: finalPriorityLevel,
         breakdown: {
           locationScore: priorityAnalysis.locationScore,
           imageScore: priorityAnalysis.imageScore,
-          facilitiesNearby: priorityAnalysis.facilitiesCount
+          facilitiesNearby: priorityAnalysis.facilitiesCount,
+          socialSignalScore: socialBoost
         },
-        reasoning: priorityAnalysis.reasoning
+        reasoning: socialBoost > 0
+          ? `${priorityAnalysis.reasoning} Social corroboration on X added ${(socialBoost * 100).toFixed(1)}% to severity score.`
+          : priorityAnalysis.reasoning
       },
+      socialSignals: {
+        status: socialSignals.status,
+        enabled: socialSignals.enabled,
+        query: socialSignals.query,
+        matchedCount: socialSignals.posts?.length || 0,
+        verifiedMatchCount: socialSignals.crossValidation?.verifiedCount || 0,
+        crossValidationEnabled: Boolean(socialSignals.crossValidation?.enabled),
+        processingTimeMs: socialSignals.processingTimeMs || 0,
+        topPosts: (socialSignals.posts || []).slice(0, 3),
+        fetchedCount: socialSignals.fetchedCount || 0,
+        scrapingTriggered: Boolean(runSocialScraping),
+        error: socialSignals.error || null
+      },
+      socialDebug: includeSocialDebug ? socialDebug : undefined,
       location: {
         privacyLevel: locationData.privacyLevel,
         accuracy: locationData.accuracy ? `±${locationData.accuracy}m` : 'Unknown',
         description: locationData.description
       },
-      nextSteps: generateNextSteps(priorityAnalysis.priorityLevel, category),
+      nextSteps: generateNextSteps(finalPriorityLevel, category),
     };
     
     res.json(response);
@@ -637,6 +759,13 @@ function getCategoryImportance(category) {
   };
   
   return categoryImportance[category] || 'standard';
+}
+
+function getPriorityLevelFromScore(score) {
+  if (score >= 0.8) return 'CRITICAL';
+  if (score >= 0.6) return 'HIGH';
+  if (score >= 0.4) return 'MEDIUM';
+  return 'LOW';
 }
 
 /**
@@ -1033,6 +1162,24 @@ router.get('/:id', async (req, res) => {
     // Add vote information to complaint
     complaint.vote_count = voteCount;
     complaint.userVoted = userVoted;
+
+    const storedSignals = await xSocialSignalService.getStoredSignals(supabase, complaintId, 5);
+    const storedBoost = xSocialSignalService.getSocialBoost(storedSignals);
+    const storedBaseScore = Number(complaint.priority_score || 0);
+    const storedFinalScore = Number(Math.min(0.999, storedBaseScore + storedBoost).toFixed(4));
+
+    complaint.social_signals = {
+      matchedCount: storedSignals.length,
+      socialBoost: storedBoost,
+      posts: storedSignals
+    };
+
+    complaint.priority_breakdown = {
+      baseScore: storedBaseScore,
+      socialBoost: storedBoost,
+      finalScore: storedFinalScore,
+      priorityLevel: getPriorityLevelFromScore(storedFinalScore)
+    };
 
     console.log(`✅ Found complaint: ${complaint.title} with ${voteCount} votes`);
 
