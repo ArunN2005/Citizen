@@ -100,29 +100,30 @@ class ImageAnalysisService {
                         rawOutput: outputObj.google_gemini_output || outputObj.gemini_predictions || null
                     });
 
-                    // Decision logic: Use model confidence if >= threshold, otherwise use OpenAI confidence if present
+                    // Decision logic: model confidence takes priority; OpenAI is the fallback validator
                     if (modelConfidence >= threshold) {
                         confidence = modelConfidence;
                         allowUpload = true;
                         message = `Detected Issue: ${modelPrediction || 'unknown'}`;
                     } else if (openaiConfidence > 0) {
-                        confidence = openaiConfidence;
-                        
                         const isNotValid = openaiPrediction && (
                             openaiPrediction.toLowerCase() === 'none' ||
-                            openaiPrediction.toLowerCase() === 'not a valid civic issue' ||
                             openaiPrediction.toLowerCase().includes('not a valid civic issue')
                         );
 
-                        if (isNotValid || openaiConfidence === 0) {
+                        if (isNotValid) {
+                            // Hard reject: confidence must be 0 so frontend cannot misread it
+                            confidence = 0;
                             allowUpload = false;
                             message = 'No valid civic issue detected in image.';
                         } else if (openaiConfidence >= threshold) {
+                            confidence = openaiConfidence;
                             allowUpload = true;
                             message = `Detected Issue: ${openaiPrediction || 'unknown'}`;
                         } else {
+                            confidence = openaiConfidence;
                             allowUpload = false;
-                            message = `Confidence too low. Detected Issue: ${openaiPrediction || 'unknown'}`;
+                            message = `Confidence too low. Detected: ${openaiPrediction || 'unknown'}`;
                         }
                     } else {
                         confidence = 0;

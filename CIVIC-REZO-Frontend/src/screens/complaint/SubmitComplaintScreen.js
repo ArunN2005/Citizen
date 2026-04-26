@@ -353,8 +353,8 @@ const SubmitComplaintScreen = ({ navigation }) => {
  const validationData = {
  confidence: result.confidence || 0,
  modelConfidence: result.modelConfidence || 0,
- openaiConfidence: result.openaiConfidence || 0,
- allowUpload: result.confidence !== undefined && result.confidence >= 0.7,
+ openaiConfidence: result.openaiConfidence,
+ allowUpload: result.allowUpload === true,
  message: result.message || 'No validation message provided',
  data: result.data || {},
  raw: result.raw || null,
