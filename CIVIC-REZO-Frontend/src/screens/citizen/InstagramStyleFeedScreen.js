@@ -1145,7 +1145,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
         >
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-              <Text style={styles.modernHeaderTitle}>CIVIC-REZO</Text>
+              <Text style={styles.modernHeaderTitle}>CityZen</Text>
               <Text style={styles.headerSubtitle}>Nearby Reports</Text>
             </View>
             <View style={styles.headerRight}>
@@ -1159,11 +1159,20 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                     colors={['#374151', '#1A1A1A']}
                     style={styles.locationGradient}
                   >
-                    <Ionicons name="locate" size={14} color="#fff" />
+                    <Ionicons name="locate" size={12} color="#fff" />
                     <Text style={styles.modernLocationText}>3km</Text>
                   </LinearGradient>
                 </TouchableOpacity>
               )}
+              <TouchableOpacity 
+                style={styles.modernIconButton}
+                onPress={() => navigation.navigate('Leaderboard')}
+                activeOpacity={0.8}
+              >
+                <View style={styles.headerIconCircle}>
+                  <Ionicons name="trophy" size={15} color="#333" />
+                </View>
+              </TouchableOpacity>
               <TouchableOpacity 
                 style={styles.modernIconButton}
                 onPress={() => navigation.navigate('SubmitComplaint')}
@@ -1173,7 +1182,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                   colors={['#1A1A1A', '#000000']}
                   style={styles.iconButtonGradient}
                 >
-                  <Ionicons name="add" size={20} color="#fff" />
+                  <Ionicons name="add" size={17} color="#fff" />
                 </LinearGradient>
               </TouchableOpacity>
               <TouchableOpacity 
@@ -1182,7 +1191,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                 activeOpacity={0.8}
               >
                 <View style={styles.profileButton}>
-                  <Ionicons name="person" size={18} color="#333" />
+                  <Ionicons name="person" size={15} color="#333" />
                 </View>
               </TouchableOpacity>
             </View>
@@ -1325,15 +1334,6 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
           
           <TouchableOpacity 
             style={styles.modernTabButton}
-            onPress={() => navigation.navigate('Leaderboard')}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="trophy-outline" size={22} color="#9CA3AF" />
-            <Text style={styles.tabText}>Top 10</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.modernTabButton}
             onPress={() => navigation.navigate('CitizenTransparency')}
             activeOpacity={0.8}
           >
@@ -1420,11 +1420,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingTop: 10,
   },
   headerLeft: {
-    flex: 1,
+    flexShrink: 1,
+    marginRight: 12,
   },
   modernHeaderTitle: {
     fontSize: 18,
@@ -1442,22 +1443,17 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   modernLocationButton: {
     borderRadius: 20,
     overflow: 'hidden',
-    shadowColor: '#1A1A1A',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    marginLeft: 12,
   },
   locationGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
   modernLocationText: {
     color: '#fff',
@@ -1466,30 +1462,31 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   modernIconButton: {
-    borderRadius: 22,
-    overflow: 'hidden',
+    borderRadius: 16,
+    marginLeft: 12,
   },
   iconButtonGradient: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#1A1A1A',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 5,
-    elevation: 4,
   },
   profileButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+  },
+  headerIconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   // Modern Loading Styles
@@ -1685,16 +1682,17 @@ const styles = StyleSheet.create({
   },
   tabBarGradient: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   modernTabButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
+    minHeight: 52,
   },
   activeTabContainer: {
     alignItems: 'center',
@@ -1717,9 +1715,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   modernAddButtonContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#1A1A1A',

@@ -1,4 +1,4 @@
-// CIVIC-REZO Institutional Theme
+// CityZen Institutional Theme
 // Clean, monochrome, professional — inspired by architectural / civic design language
 
 export const EnvironmentalTheme = {

@@ -113,7 +113,7 @@ const ModernAdminDashboard = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.brandMark}>CIVIC-REZO</Text>
+          <Text style={styles.brandMark}>CityZen</Text>
           <Text style={styles.brandSub}>Admin Console</Text>
         </View>
         <TouchableOpacity style={styles.avatarButton} onPress={handleLogout}>

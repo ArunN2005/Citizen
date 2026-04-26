@@ -109,13 +109,19 @@ const CitizenDashboard = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.brandMark}>CIVIC-REZO</Text>
+          <Text style={styles.brandMark}>CityZen</Text>
           <Text style={styles.brandSub}>{t('app.institutionalPortal')}</Text>
         </View>
         <View style={styles.headerRight}>
           <LanguageSwitcher compact />
+          <TouchableOpacity 
+            style={styles.headerIcon}
+            onPress={() => navigation.navigate('Leaderboard')}
+          >
+            <Ionicons name="trophy" size={18} color="#374151" />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.headerIcon}>
-            <Ionicons name="notifications-outline" size={22} color="#374151" />
+            <Ionicons name="notifications-outline" size={20} color="#374151" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.avatarButton}
@@ -268,15 +274,6 @@ const CitizenDashboard = ({ navigation }) => {
           
           <TouchableOpacity 
             style={styles.modernTabButton}
-            onPress={() => navigation.navigate('Leaderboard')}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="trophy-outline" size={22} color="#9CA3AF" />
-            <Text style={styles.tabText}>Top 10</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.modernTabButton}
             onPress={() => navigation.navigate('PersonalReports')}
             activeOpacity={0.8}
           >
@@ -321,26 +318,26 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
   headerIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#F3F4F6',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: '#1A1A1A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '600',
     color: '#FFFFFF',
   },
@@ -536,16 +533,17 @@ const styles = StyleSheet.create({
   },
   tabBarGradient: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   modernTabButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
+    minHeight: 52,
   },
   activeTabContainer: {
     alignItems: 'center',
@@ -568,9 +566,9 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   modernAddButtonContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#1A1A1A',
