@@ -6,6 +6,7 @@ import {
   StyleSheet,
   StatusBar,
   Dimensions,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '../../i18n/useTranslation';
@@ -26,11 +27,12 @@ const WelcomeScreen = ({ navigation }) => {
 
       {/* Top brand section */}
       <View style={styles.brandSection}>
-        <View style={styles.logoMark}>
-          <Ionicons name="compass-outline" size={36} color="#1A1A1A" />
-        </View>
+        <Image
+          source={require('../../../assets/cityzen-logo.jpg')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
 
-        <Text style={styles.brandName}>{t('app.brandName')}</Text>
         <View style={styles.divider} />
         <Text style={styles.tagline}>{t('app.institutionalPortal')}</Text>
       </View>
@@ -82,23 +84,10 @@ const styles = StyleSheet.create({
     right: 16,
     zIndex: 5,
   },
-  logoMark: {
-    width: 72,
-    height: 72,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  brandName: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: '#1A1A1A',
-    letterSpacing: 2,
-    marginBottom: 12,
+  logoImage: {
+    width: 180,
+    height: 180,
+    marginBottom: 24,
   },
   divider: {
     width: 40,
