@@ -107,6 +107,7 @@ app.use('/api/feedback', require('./routes/feedback'));
 app.use('/api/gradcam', require('./routes/gradcam'));
 app.use('/api/weather', require('./routes/weather'));
 app.use('/api/volunteer', require('./routes/volunteer').router);
+app.use('/api/gamification', require('./routes/gamification'));
 
 // Health check
 app.get('/health', (req, res) => {

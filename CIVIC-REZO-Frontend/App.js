@@ -29,6 +29,9 @@ import MultiStepSubmitComplaintScreen from './src/screens/complaint/MultiStepSub
 import ComplaintMapScreen from './src/screens/citizen/ComplaintMapScreen';
 import ComplaintDetailScreen from './src/screens/citizen/ComplaintDetailScreen';
 import LeaderboardScreen from './src/screens/citizen/LeaderboardScreen';
+import BadgesScreen from './src/screens/citizen/BadgesScreen';
+import ChallengesScreen from './src/screens/citizen/ChallengesScreen';
+import RewardsScreen from './src/screens/citizen/RewardsScreen';
 import ComplaintFeedScreen from './src/screens/citizen/ComplaintFeedScreen';
 import InstagramStyleFeedScreen from './src/screens/citizen/InstagramStyleFeedScreen';
 import CitizenTransparencyScreen from './src/screens/citizen/CitizenTransparencyScreen';
@@ -86,6 +89,9 @@ export default function App() {
           <Stack.Screen name="ComplaintDetail" component={ComplaintDetailScreen} />
           <Stack.Screen name="ComplaintFeed" component={ComplaintFeedScreen} />
           <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="Badges" component={BadgesScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="Challenges" component={ChallengesScreen} options={{ presentation: 'modal' }} />
+          <Stack.Screen name="Rewards" component={RewardsScreen} options={{ presentation: 'modal' }} />
           <Stack.Screen name="InstagramFeed" component={InstagramStyleFeedScreen} />
           <Stack.Screen name="CitizenTransparency" component={CitizenTransparencyScreen} />
           <Stack.Screen name="PersonalReports" component={PersonalReports} />
