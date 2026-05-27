@@ -794,6 +794,76 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
     );
   };
 
+  const renderGamificationStories = () => (
+    <View style={styles.storiesContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.storiesScrollView}
+      >
+        <TouchableOpacity
+          style={styles.storyItem}
+          onPress={() => navigation.navigate('Badges')}
+        >
+          <LinearGradient
+            colors={['#FFD700', '#f39c12']}
+            style={styles.storyRing}
+          >
+            <View style={styles.storyIcon}>
+              <MaterialCommunityIcons name="trophy" size={22} color="#fff" />
+            </View>
+          </LinearGradient>
+          <Text style={styles.storyText}>Badges</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.storyItem}
+          onPress={() => navigation.navigate('Challenges')}
+        >
+          <LinearGradient
+            colors={['#e74c3c', '#c0392b']}
+            style={styles.storyRing}
+          >
+            <View style={styles.storyIcon}>
+              <MaterialCommunityIcons name="fire" size={22} color="#fff" />
+            </View>
+          </LinearGradient>
+          <Text style={styles.storyText}>Challenges</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.storyItem}
+          onPress={() => navigation.navigate('Rewards')}
+        >
+          <LinearGradient
+            colors={['#2ecc71', '#27ae60']}
+            style={styles.storyRing}
+          >
+            <View style={styles.storyIcon}>
+              <MaterialCommunityIcons name="gift" size={22} color="#fff" />
+            </View>
+          </LinearGradient>
+          <Text style={styles.storyText}>Rewards</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.storyItem}
+          onPress={() => navigation.navigate('Leaderboard')}
+        >
+          <LinearGradient
+            colors={['#6B7280', '#374151']}
+            style={styles.storyRing}
+          >
+            <View style={styles.storyIcon}>
+              <Ionicons name="podium" size={22} color="#fff" />
+            </View>
+          </LinearGradient>
+          <Text style={styles.storyText}>Top Volunteers</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+
   const renderHeader = () => {
     return (
       <View>
@@ -1201,6 +1271,10 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
       
       {loading && !refreshing ? (
         <Animated.View style={[styles.modernLoadingContainer, { transform: [{ translateY: slideAnim }] }]}>
+          {/* Gamification Quick Actions */}
+          <WeatherWidget />
+          {renderGamificationStories()}
+
           <LinearGradient
             colors={['#374151', '#1A1A1A']}
             style={styles.loadingGradient}
@@ -1212,6 +1286,12 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
         </Animated.View>
       ) : complaints.length === 0 ? (
         <Animated.View style={[styles.modernEmptyContainer, { transform: [{ translateY: slideAnim }] }]}>
+          {/* Gamification Quick Actions */}
+          <View style={{ width: '100%', paddingHorizontal: 0 }}>
+            <WeatherWidget />
+            {renderGamificationStories()}
+          </View>
+
           <View
             style={[styles.emptyIconContainer, { backgroundColor: '#F3F4F6' }]}
           >
@@ -1268,73 +1348,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
                 <WeatherWidget />
 
                 {/* Gamification Quick Actions — Instagram Story Style */}
-                <View style={styles.storiesContainer}>
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.storiesScrollView}
-                  >
-                    <TouchableOpacity
-                      style={styles.storyItem}
-                      onPress={() => navigation.navigate('Badges')}
-                    >
-                      <LinearGradient
-                        colors={['#FFD700', '#f39c12']}
-                        style={styles.storyRing}
-                      >
-                        <View style={styles.storyIcon}>
-                          <MaterialCommunityIcons name="trophy" size={22} color="#fff" />
-                        </View>
-                      </LinearGradient>
-                      <Text style={styles.storyText}>Badges</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.storyItem}
-                      onPress={() => navigation.navigate('Challenges')}
-                    >
-                      <LinearGradient
-                        colors={['#e74c3c', '#c0392b']}
-                        style={styles.storyRing}
-                      >
-                        <View style={styles.storyIcon}>
-                          <MaterialCommunityIcons name="fire" size={22} color="#fff" />
-                        </View>
-                      </LinearGradient>
-                      <Text style={styles.storyText}>Challenges</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.storyItem}
-                      onPress={() => navigation.navigate('Rewards')}
-                    >
-                      <LinearGradient
-                        colors={['#2ecc71', '#27ae60']}
-                        style={styles.storyRing}
-                      >
-                        <View style={styles.storyIcon}>
-                          <MaterialCommunityIcons name="gift" size={22} color="#fff" />
-                        </View>
-                      </LinearGradient>
-                      <Text style={styles.storyText}>Rewards</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={styles.storyItem}
-                      onPress={() => navigation.navigate('Leaderboard')}
-                    >
-                      <LinearGradient
-                        colors={['#6B7280', '#374151']}
-                        style={styles.storyRing}
-                      >
-                        <View style={styles.storyIcon}>
-                          <Ionicons name="podium" size={22} color="#fff" />
-                        </View>
-                      </LinearGradient>
-                      <Text style={styles.storyText}>Top Volunteers</Text>
-                    </TouchableOpacity>
-                  </ScrollView>
-                </View>
+                {renderGamificationStories()}
 
                 {/* News Carousel */}
                 {topNews.length > 0 ? (
