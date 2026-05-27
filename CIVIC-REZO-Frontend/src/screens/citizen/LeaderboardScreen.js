@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { makeApiCall, apiClient } from '../../../config/supabase';
+import BadgeIcon from '../../components/BadgeIcon';
 
 const LeaderboardScreen = ({ navigation }) => {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -23,9 +24,22 @@ const LeaderboardScreen = ({ navigation }) => {
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await makeApiCall(`${apiClient.baseUrl}/api/volunteer/leaderboard`, { method: 'GET' });
-      if (response && response.success) {
-        setLeaderboard(response.leaderboard);
+      // Try gamified leaderboard first, fall back to basic volunteer leaderboard
+      const gamifiedRes = await makeApiCall(
+        `${apiClient.baseUrl}/api/gamification/leaderboard`,
+        { method: 'GET' }
+      );
+      if (gamifiedRes && gamifiedRes.success && gamifiedRes.leaderboard.length > 0) {
+        setLeaderboard(gamifiedRes.leaderboard);
+      } else {
+        // Fallback to original leaderboard
+        const response = await makeApiCall(
+          `${apiClient.baseUrl}/api/volunteer/leaderboard`,
+          { method: 'GET' }
+        );
+        if (response && response.success) {
+          setLeaderboard(response.leaderboard);
+        }
       }
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
@@ -41,10 +55,13 @@ const LeaderboardScreen = ({ navigation }) => {
   };
 
   const renderLeaderboardItem = ({ item, index }) => {
-    let medalColor = '#A9A9A9'; // default grey
-    if (index === 0) medalColor = '#FFD700'; // Gold
-    else if (index === 1) medalColor = '#C0C0C0'; // Silver
-    else if (index === 2) medalColor = '#CD7F32'; // Bronze
+    let medalColor = '#A9A9A9';
+    if (index === 0) medalColor = '#FFD700';
+    else if (index === 1) medalColor = '#C0C0C0';
+    else if (index === 2) medalColor = '#CD7F32';
+
+    const badges = item.badges || [];
+    const points = item.totalPoints || 0;
 
     return (
       <View style={styles.card}>
@@ -58,10 +75,33 @@ const LeaderboardScreen = ({ navigation }) => {
         <View style={styles.infoContainer}>
           <Text style={styles.nameText}>{item.name}</Text>
           <Text style={styles.typeText}>{item.type === 'rotary' ? 'Rotary Member' : 'Volunteer'}</Text>
+          {/* Badge Icons Row */}
+          {badges.length > 0 && (
+            <View style={styles.badgeRow}>
+              {badges.slice(0, 3).map((b, i) => (
+                <View key={i} style={styles.miniBadge}>
+                  <MaterialCommunityIcons
+                    name={b.icon || 'medal'}
+                    size={14}
+                    color="#FFD700"
+                  />
+                </View>
+              ))}
+              {badges.length > 3 && (
+                <Text style={styles.badgeExtra}>+{badges.length - 3}</Text>
+              )}
+            </View>
+          )}
         </View>
         <View style={styles.scoreContainer}>
           <Text style={styles.scoreNumber}>{item.missionsCompleted}</Text>
           <Text style={styles.scoreLabel}>Missions</Text>
+          {points > 0 && (
+            <View style={styles.pointsRow}>
+              <MaterialCommunityIcons name="star-circle" size={12} color="#f39c12" />
+              <Text style={styles.pointsText}>{points}</Text>
+            </View>
+          )}
         </View>
       </View>
     );
@@ -92,6 +132,17 @@ const LeaderboardScreen = ({ navigation }) => {
           data={leaderboard}
           keyExtractor={(item) => item.id}
           renderItem={renderLeaderboardItem}
+          ListHeaderComponent={
+            leaderboard.length > 0
+              ? () => (
+                  <View style={styles.gamificationToggle}>
+                    <Text style={styles.gamificationToggleText}>
+                      🏅 Now showing badges & impact points!
+                    </Text>
+                  </View>
+                )
+              : null
+          }
           contentContainerStyle={styles.listContainer}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#f39c12']} />
@@ -200,6 +251,46 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#888',
     textTransform: 'uppercase',
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  miniBadge: {
+    marginRight: 2,
+    backgroundColor: '#FFF8E1',
+    borderRadius: 8,
+    padding: 2,
+  },
+  badgeExtra: {
+    fontSize: 11,
+    color: '#f39c12',
+    fontWeight: '600',
+    marginLeft: 2,
+  },
+  pointsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  pointsText: {
+    fontSize: 12,
+    color: '#f39c12',
+    fontWeight: '600',
+    marginLeft: 2,
+  },
+  gamificationToggle: {
+    marginBottom: 12,
+    padding: 10,
+    backgroundColor: '#FFF8E1',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  gamificationToggleText: {
+    fontSize: 13,
+    color: '#f39c12',
+    fontWeight: '600',
   },
 });
 
