@@ -345,7 +345,18 @@ router.post('/submit', async (req, res) => {
         }
         
         
-        // 2. Add entry to complaint_votes table (creator's vote)
+        // 2. Award gamification points and evaluate badges
+        try {
+          const gamificationService = require('../services/GamificationService');
+          await gamificationService.awardComplaintPoints(userUuid, complaintId);
+          await gamificationService.trackChallengeProgress(userUuid, 'report_any');
+          await gamificationService.evaluateBadges(userUuid);
+          console.log('✅ Gamification processed for complaint:', complaintId);
+        } catch (gamErr) {
+          console.error('❌ Gamification processing error:', gamErr);
+        }
+        
+        // 3. Add entry to complaint_votes table (creator's vote)
         try {
           // Use a simpler approach - just delete existing votes first if any
           await supabase
