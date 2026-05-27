@@ -100,24 +100,6 @@ const CitizenDashboard = ({ navigation }) => {
       subtitle: 'See top Rotary contributors',
       onPress: () => navigation.navigate('Leaderboard'),
     },
-    {
-      icon: 'ribbon-outline',
-      title: 'My Badges',
-      subtitle: 'Earn badges for your civic impact',
-      onPress: () => navigation.navigate('Badges'),
-    },
-    {
-      icon: 'flame-outline',
-      title: 'Weekly Challenges',
-      subtitle: 'Complete challenges, earn rewards',
-      onPress: () => navigation.navigate('Challenges'),
-    },
-    {
-      icon: 'gift-outline',
-      title: 'Impact Rewards',
-      subtitle: 'Redeem points for civic perks',
-      onPress: () => navigation.navigate('Rewards'),
-    },
   ];
 
   return (
