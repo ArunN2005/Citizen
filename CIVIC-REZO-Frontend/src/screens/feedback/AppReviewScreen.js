@@ -13,8 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from '../../i18n/useTranslation';
-
-const API_BASE_URL = process.env.SERVER_URL || 'http://localhost:3001';
+import { makeApiCall, API_BASE_URL } from '../../../config/supabase';
 
 const AppReviewScreen = ({ navigation }) => {
   const { t } = useTranslation();
@@ -40,17 +39,14 @@ const AppReviewScreen = ({ navigation }) => {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/app-review/submit`, {
+      const data = await makeApiCall(`${API_BASE_URL}/api/app-review/submit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           rating,
           title: title.trim() || null,
           review_text: reviewText.trim() || null
         })
       });
-
-      const data = await response.json();
 
       if (data.success) {
         Alert.alert(
