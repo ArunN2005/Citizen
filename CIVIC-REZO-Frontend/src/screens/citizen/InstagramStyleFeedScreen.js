@@ -860,6 +860,21 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
           </LinearGradient>
           <Text style={styles.storyText}>Top Volunteers</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.storyItem}
+          onPress={() => navigation.navigate('AppReview')}
+        >
+          <LinearGradient
+            colors={['#F59E0B', '#D97706']}
+            style={styles.storyRing}
+          >
+            <View style={styles.storyIcon}>
+              <Ionicons name="star" size={22} color="#fff" />
+            </View>
+          </LinearGradient>
+          <Text style={styles.storyText}>Rate App</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -914,21 +929,6 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
               </View>
             </LinearGradient>
             <Text style={styles.storyText}>Stats</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.storyItem}
-            onPress={() => navigation.navigate('AppReview')}
-          >
-            <LinearGradient
-              colors={['#F59E0B', '#D97706']}
-              style={styles.storyRing}
-            >
-              <View style={styles.storyIcon}>
-                <Ionicons name="star" size={22} color="#fff" />
-              </View>
-            </LinearGradient>
-            <Text style={styles.storyText}>Rate App</Text>
           </TouchableOpacity>
 
           {/* Dynamic stories from categories */}
