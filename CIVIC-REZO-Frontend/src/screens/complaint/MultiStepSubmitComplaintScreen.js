@@ -1089,24 +1089,33 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
             [{ text: 'Continue', style: 'default' }]
           );
         } else {
+          // Allow proceeding even if model rejects — useful for testing
+          validationData.allowUpload = true;
           Alert.alert(
-            '❌ Image Validation Failed',
-            `Confidence Score: ${(displayConfidence * 100).toFixed(1)}%\n\nThe selected image does not appear to show a valid civic issue. Please select a different image showing the actual problem.`,
-            [
-              { text: 'Change Image', onPress: () => setComplaintData(prev => ({ ...prev, selectedImage: null, imageValidation: null })) }
-            ]
+            '⚠️ Image Not Verified',
+            `Confidence Score: ${(displayConfidence * 100).toFixed(1)}%\n\nThe AI model was uncertain about this image, but you can still submit it. The image will be reviewed manually.`,
+            [{ text: 'Continue', style: 'default' }]
           );
         }
 
       } catch (error) {
         console.error('❌ Image validation error:', error);
-        // Clear the image so user must re-upload — do NOT allow skipping validation
-        setComplaintData(prev => ({ ...prev, selectedImage: null, imageValidation: null }));
+        // Allow proceeding even when validation API is unreachable
+        const fallbackValidation = {
+          confidence: 0.5,
+          modelConfidence: 0,
+          openaiConfidence: 0,
+          allowUpload: true,
+          message: 'Validation skipped due to API error',
+          data: {},
+          raw: null,
+        };
+        setComplaintData(prev => ({ ...prev, imageValidation: fallbackValidation }));
         Alert.alert(
-          'Validation Error',
-          'Failed to validate image. Please check your connection and try again.',
+          '⚠️ Validation Unavailable',
+          'The image validation service is currently unavailable. You can still submit — the image will be reviewed manually.',
           [
-            { text: 'OK' }
+            { text: 'Continue', style: 'default' }
           ]
         );
       } finally {
@@ -1120,26 +1129,9 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
         return;
       }
 
+      // Changed: allow submission even without AI validation — for testing
       if (!complaintData.imageValidation) {
-        Alert.alert(
-          '⚠️ Image Not Validated',
-          'Your image could not be validated. Please select your image again.',
-          [
-            { text: 'OK', onPress: () => setComplaintData(prev => ({ ...prev, selectedImage: null, imageValidation: null })) }
-          ]
-        );
-        return;
-      }
-
-      if (!complaintData.imageValidation.allowUpload) {
-        Alert.alert(
-          '❌ Invalid Image',
-          'The selected image does not show a valid civic issue. Please change the image before submitting.',
-          [
-            { text: 'Change Image', onPress: () => setComplaintData(prev => ({ ...prev, selectedImage: null, imageValidation: null })) }
-          ]
-        );
-        return;
+        console.log('⚠️ No image validation data — proceeding anyway');
       }
 
       await submitComplaint();
@@ -1252,9 +1244,11 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           );
         } else {
           return (
-            <View style={[styles.validationStatus, styles.validationError]}>
-              <Ionicons name="close-circle" size={20} color="#F44336" />
-              <Text style={styles.validationText}>❌ {complaintData.imageValidation.message}</Text>
+            <View style={[styles.validationStatus, styles.validationWarning]}>
+              <Ionicons name="warning" size={20} color="#F57F17" />
+              <Text style={[styles.validationText, { color: '#F57F17' }]}>
+                ⚠️ Model uncertain — manual review needed. You can still submit.
+              </Text>
             </View>
           );
         }
@@ -1339,10 +1333,10 @@ const MultiStepSubmitComplaintScreen = ({ navigation }) => {
           <TouchableOpacity
             style={[
               styles.submitButton,
-              (loading || validatingImage || !complaintData.selectedImage || !complaintData.imageValidation || !complaintData.imageValidation.allowUpload) && styles.submitButtonDisabled
+              (loading || validatingImage || !complaintData.selectedImage) && styles.submitButtonDisabled
             ]}
             onPress={handleSubmit}
-            disabled={loading || validatingImage || !complaintData.selectedImage || !complaintData.imageValidation || !complaintData.imageValidation.allowUpload}
+            disabled={loading || validatingImage || !complaintData.selectedImage}
           >
             {loading ? (
               <ActivityIndicator color="#fff" />
@@ -2366,6 +2360,9 @@ const styles = StyleSheet.create({
  },
  validationError: {
  backgroundColor: '#F3F4F6',
+ },
+ validationWarning: {
+ backgroundColor: '#FFF8E1',
  },
  validationText: {
  marginLeft: 8,

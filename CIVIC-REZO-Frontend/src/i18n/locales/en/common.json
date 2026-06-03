@@ -58,7 +58,9 @@
       "aiAssistant": "AI Assistant",
       "aiAssistantSub": "Get instant help",
       "voiceReport": "Voice Report",
-      "voiceReportSub": "Speak your concern"
+      "voiceReportSub": "Speak your concern",
+      "rateApp": "Rate the App",
+      "rateAppSub": "Review & rate UrbanPulse"
     },
     "logoutConfirmTitle": "Logout",
     "logoutConfirmMessage": "Are you sure you want to logout?"
@@ -410,6 +412,33 @@
     "allCategories": "All Categories",
     "loadingMap": "Loading map...",
     "noComplaints": "No complaints found in this area"
+  },
+  "appReview": {
+    "title": "Rate UrbanPulse",
+    "subtitle": "Share your experience with the app",
+    "ratingPrompt": "How would you rate your experience?",
+    "ratingRequired": "Rating Required",
+    "ratingRequiredMessage": "Please select a star rating before submitting.",
+    "rating1": "Not great",
+    "rating2": "Could be better",
+    "rating3": "It's okay",
+    "rating4": "Really good!",
+    "rating5": "Absolutely love it! ❤️",
+    "titlePrompt": "Give your review a title",
+    "titlePlaceholder": "e.g., Great app for civic engagement!",
+    "reviewPrompt": "Tell us more (optional)",
+    "reviewPlaceholder": "What do you like? What could we improve?",
+    "submit": "Submit Review",
+    "submitting": "Submitting your review...",
+    "thankYou": "Thank You! 🎉",
+    "thankYouMessage": "Your review helps us make UrbanPulse better for everyone.",
+    "submitError": "Failed to submit review. Please try again.",
+    "networkError": "Could not reach the server. Please check your connection.",
+    "skipTitle": "Skip Review?",
+    "skipMessage": "Your feedback helps us improve. Are you sure you want to skip?",
+    "leaveReview": "Leave a Review",
+    "skip": "Skip",
+    "skipReview": "Skip for now"
   },
   "prediction": {
     "environmentalImpact": "Environmental Impact Analysis",
