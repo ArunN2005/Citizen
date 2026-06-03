@@ -1217,7 +1217,7 @@ const InstagramStyleFeedScreen = ({ navigation }) => {
           >
             <Ionicons name="checkmark-circle-outline" size={50} color="#9CA3AF" />
           </View>
-          <Text style={styles.modernEmptyTitle}>No Reports Nearby</Text>
+          <Text style={styles.modernEmptyTitle}>No Reports Kiran</Text>
           <Text style={styles.modernEmptyText}>
             No issues reported within 3km.{'\n'}
             Be the first to submit a report.

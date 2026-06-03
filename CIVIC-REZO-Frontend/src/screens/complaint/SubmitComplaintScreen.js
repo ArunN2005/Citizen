@@ -309,9 +309,31 @@ const SubmitComplaintScreen = ({ navigation }) => {
  }
  };
 
+ const deleteCloudinaryImage = async (publicId) => {
+ if (!publicId) return;
+ try {
+ const deleteRes = await fetch(`${API_BASE_URL}/cloudinary/delete-image`, {
+ method: 'POST',
+ headers: { 'Content-Type': 'application/json' },
+ body: JSON.stringify({ public_id: publicId })
+ });
+
+ if (deleteRes.ok) {
+ const deleteResult = await deleteRes.json();
+ console.log(' Cloudinary delete response:', deleteResult);
+ } else {
+ console.warn('️ Cloudinary delete failed with status:', deleteRes.status);
+ }
+ } catch (deleteErr) {
+ console.warn('️ Failed to delete image from Cloudinary:', deleteErr.message);
+ }
+ };
+
  const validateImage = async (imageAsset) => {
  if (!imageAsset) return;
  setValidatingImage(true);
+ let cloudinaryUrl = null;
+ let cloudinaryPublicId = null;
  try {
  console.log(' Starting image validation...');
  // 1. Upload image to Cloudinary
@@ -330,6 +352,9 @@ const SubmitComplaintScreen = ({ navigation }) => {
  });
  const cloudResult = await cloudRes.json();
  if (!cloudResult.secure_url) throw new Error('Cloudinary upload failed');
+
+ cloudinaryUrl = cloudResult.secure_url;
+ cloudinaryPublicId = cloudResult.public_id;
  
  console.log(' Image uploaded to Cloudinary:', cloudResult.secure_url);
  
@@ -360,29 +385,6 @@ const SubmitComplaintScreen = ({ navigation }) => {
  raw: result.raw || null,
  };
  setImageValidation(validationData);
- 
- // Automatically delete invalid images from Cloudinary via backend
- if (!validationData.allowUpload && cloudResult?.public_id) {
- try {
- console.log('️ Attempting to delete invalid image from Cloudinary:', cloudResult.public_id);
- const deleteRes = await fetch(`${API_BASE_URL}/cloudinary/delete-image`, {
- method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify({ public_id: cloudResult.public_id })
- });
- 
- if (deleteRes.ok) {
- const deleteResult = await deleteRes.json();
- console.log(' Cloudinary delete response:', deleteResult);
- } else {
- console.warn('️ Cloudinary delete failed with status:', deleteRes.status);
- }
- } catch (deleteErr) {
- console.warn('️ Failed to delete image from Cloudinary:', deleteErr.message);
- }
- } else if (!validationData.allowUpload) {
- console.log('ℹ️ Skipping Cloudinary delete - no public_id available');
- }
 
  // Determine display confidence
  const displayConfidence = validationData.modelConfidence >= 0.7 ? validationData.modelConfidence : validationData.confidence;
@@ -426,7 +428,12 @@ const SubmitComplaintScreen = ({ navigation }) => {
  );
  } finally {
  setValidatingImage(false);
- }
+ { text: 'Continue', style: 'default' },
+ { text: 'Change Image', onPress: async () => {
+ await deleteCloudinaryImage(cloudinaryPublicId);
+ setSelectedImage(null);
+ setImageValidation(null);
+ } }
  };
 
  // Voice input functions
@@ -435,21 +442,51 @@ const SubmitComplaintScreen = ({ navigation }) => {
  
  try {
  // Request audio recording permissions
- const { status } = await Audio.requestPermissionsAsync();
+ { text: 'Continue', style: 'default' },
+ { text: 'Change Image', onPress: async () => {
+ await deleteCloudinaryImage(cloudinaryPublicId);
+ setSelectedImage(null);
+ setImageValidation(null);
+ } }
  if (status !== 'granted') {
  Alert.alert('Permission Required', 'Please allow microphone access to record your complaint.');
  return;
  }
  
- // Start recording with Sarvam Speech Service using the selected language
- console.log(`Starting speech recognition with language: ${selectedLang}`);
- await speechService.startSpeech(selectedLang);
- 
- } catch (err) {
- console.error('Speech recognition setup error:', err);
- setVoiceError(err.message);
- setIsRecording(false);
- Alert.alert('Error', 'Failed to start speech recognition: ' + err.message);
+ if (cloudinaryUrl) {
+ setSelectedImage({
+ ...imageAsset,
+ uri: cloudinaryUrl,
+ cloudinaryUrl: cloudinaryUrl,
+ publicId: cloudinaryPublicId
+ });
+ setImageValidation({
+ allowUpload: false,
+ confidence: 0,
+ message: 'Validation failed. You can continue or change the image.'
+ });
+ Alert.alert(
+ 'Validation Error',
+ 'Failed to validate image. You can continue or change the image.',
+ [
+ { text: 'Continue', style: 'default' },
+ { text: 'Change Image', onPress: async () => {
+ await deleteCloudinaryImage(cloudinaryPublicId);
+ setSelectedImage(null);
+ setImageValidation(null);
+ } }
+ ]
+ );
+ } else {
+ setSelectedImage(null);
+ setImageValidation(null);
+ Alert.alert(
+ 'Validation Error',
+ 'Failed to validate image. Please check your connection and select another image.',
+ [
+ { text: 'OK' }
+ ]
+ );
  }
  };
 
@@ -508,9 +545,10 @@ const SubmitComplaintScreen = ({ navigation }) => {
  if (!imageValidation) {
  Alert.alert(
  '⚠️ Image Not Validated',
- 'Your image could not be validated. Please select your image again.',
+ 'Your image could not be validated. You can continue or select another image.',
  [
- { text: 'OK', onPress: () => { setSelectedImage(null); setImageValidation(null); } }
+ { text: 'Continue', style: 'default', onPress: () => proceedWithSubmission() },
+ { text: 'Change Image', onPress: async () => { await deleteCloudinaryImage(selectedImage?.publicId); setSelectedImage(null); setImageValidation(null); } }
  ]
  );
  return;
@@ -518,10 +556,11 @@ const SubmitComplaintScreen = ({ navigation }) => {
 
  if (!imageValidation.allowUpload) {
  Alert.alert(
- '❌ Invalid Image',
- `Confidence Score: ${(imageValidation.confidence * 100).toFixed(1)}%\n\nThe selected image does not show a valid civic issue. Please change the image.`,
+ 'Image Validation Failed',
+ `Confidence Score: ${(imageValidation.confidence * 100).toFixed(1)}%\n\nThe selected image does not show a valid civic issue. You can continue or change the image.`,
  [
- { text: 'Change Image', onPress: () => { setSelectedImage(null); setImageValidation(null); } }
+ { text: 'Continue', style: 'default', onPress: () => proceedWithSubmission() },
+ { text: 'Change Image', onPress: async () => { await deleteCloudinaryImage(selectedImage?.publicId); setSelectedImage(null); setImageValidation(null); } }
  ]
  );
  return;
@@ -889,7 +928,11 @@ const SubmitComplaintScreen = ({ navigation }) => {
  <Image source={{ uri: selectedImage.uri }} style={styles.selectedImage} />
  <TouchableOpacity 
  style={styles.changeImageButton}
- onPress={() => setSelectedImage(null)}
+ onPress={async () => {
+ await deleteCloudinaryImage(selectedImage?.publicId);
+ setSelectedImage(null);
+ setImageValidation(null);
+ }}
  >
  <Text style={styles.changeImageText}>Change Image</Text>
  </TouchableOpacity>
