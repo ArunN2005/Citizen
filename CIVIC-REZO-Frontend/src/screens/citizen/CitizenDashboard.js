@@ -95,6 +95,12 @@ const CitizenDashboard = ({ navigation }) => {
       onPress: () => navigation.navigate('SubmitComplaint', { useVoice: true }),
     },
     {
+      icon: 'star-outline',
+      title: t('dashboard.actions.rateApp'),
+      subtitle: t('dashboard.actions.rateAppSub'),
+      onPress: () => navigation.navigate('AppReview'),
+    },
+    {
       icon: 'trophy-outline',
       title: 'Volunteer Leaderboard',
       subtitle: 'See top Rotary contributors',

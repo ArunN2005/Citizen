@@ -38,6 +38,7 @@ import CitizenTransparencyScreen from './src/screens/citizen/CitizenTransparency
 import PersonalReports from './src/screens/citizen/PersonalReports';
 import CivicChatbotScreen from './src/screens/citizen/CivicChatbotScreen';
 import FeedbackScreen from './src/screens/feedback/FeedbackScreen';
+import AppReviewScreen from './src/screens/feedback/AppReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -97,6 +98,7 @@ export default function App() {
           <Stack.Screen name="PersonalReports" component={PersonalReports} />
           <Stack.Screen name="CivicChatbot" component={CivicChatbotScreen} />
           <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />
+          <Stack.Screen name="AppReview" component={AppReviewScreen} />
           
           {/* Admin Screens */}
           <Stack.Screen name="AdminDashboard" component={AdminDashboard} />
